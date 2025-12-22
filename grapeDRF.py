@@ -221,18 +221,16 @@ class GrapeDRF(object):
         ax.set_xticks(xticks)
         ax.set_xticklabels(xtkls)
 
-station_name = sys.argv[1]
-
 if __name__ == '__main__':
-    station     = station_name
-    sDate       = datetime.datetime(2024,5,11)
-    eDate       = datetime.datetime(2024,5,12)
+    station     = 'w2naf'
+    sDate       = datetime.datetime(2024,4,8)
+    eDate       = datetime.datetime(2024,4,9)
 
     figd = {}
-    #figd['cfreqs']                  = [20,15,10,5]
-    figd['cfreqs']                  = [10]
-    figd['solar_lat']               =  33.40 # K4BSE
-    figd['solar_lon']               = -84.46 # K4BSE
+    figd['cfreqs']                  = [20,15,10,5]
+    #figd['cfreqs']                  = [10]
+    figd['solar_lat']               = 41.335116
+    figd['solar_lon']               = -75.600692
     figd['overlaySolarElevation']   = True
     figd['overlayEclipse']          = True
 

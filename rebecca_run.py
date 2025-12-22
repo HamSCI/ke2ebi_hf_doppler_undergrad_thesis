@@ -35,14 +35,14 @@ mpl.rcParams['legend.fontsize'] = 'xx-large'
 # frequencies = sys.argv[4]
 
 # Inputs
-channel     = "k4bse"
+channel     = "w2naf"
 start_date  = "2024-5-10"
 end_date    = "2024-5-11"
-frequencies = "10"
+frequencies = "3.33,7.85,14.67"
 
 sYear, sMonth, sDay = map(int, start_date.split("-"))
 eYear, eMonth, eDay = map(int, end_date.split("-"))
-freq_list = list(map(int, frequencies.split(',')))
+freq_list = list(map(float, frequencies.split(',')))
 
 # Paths to directories
 base_directory='./'
