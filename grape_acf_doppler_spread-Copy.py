@@ -161,13 +161,13 @@ plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
 plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
 
-'''
+
 with open(plot_dir + f"_ACF_Doppler_{frequency}MHz_{date}.csv", "w", newline="") as f:
   writer = csv.writer(f)
   writer.writerow(["Time", "Doppler_shift_Hz"])
   for t, d in zip(time[:length], freq[:length]):
     writer.writerow([t, d])
-'''
+
 #=========================================================================================================================
 
 '''
