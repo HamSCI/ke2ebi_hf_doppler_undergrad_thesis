@@ -65,7 +65,7 @@ def utc_to_decimal_hours(t):
    return t.hour + t.minute/60 + t.second/3600
 
 # Input time window
-start_utc = datetime.time(17,10,0)
+start_utc = datetime.time(0,0,0)
 end_utc   = datetime.time(23,59,0)
 
 start_decimal = utc_to_decimal_hours(start_utc)
@@ -78,6 +78,31 @@ outfile  = os.path.join(
     plot_dir,
     f"{station}_Doppler_vs_time_{frequency.replace(' ','')}_{date}_{start_utc}-{end_utc}.png"
 )
+
+large_fd = []
+large_fd_timestamps = []
+
+doppler_mags = np.abs(doppler)
+for i in range(len(doppler_mags)):
+   magnitude = doppler_mags[i]
+   timestamp = hour[i]
+   if magnitude >= 2.0:
+      large_fd.append(magnitude)
+      large_fd_timestamps.append(timestamp)
+
+#print(large_fd)
+print(large_fd_timestamps)
+
+timestamp_min = np.min(large_fd_timestamps)
+timestamp_max = np.max(large_fd_timestamps)
+timestamp_min_utc = decimal_hours_to_utc(timestamp_min)
+timestamp_max_utc = decimal_hours_to_utc(timestamp_max)
+
+print("Timestamp min: " + str(timestamp_min_utc))
+print("Timestamp max: " + str(timestamp_max_utc))
+
+
+
 '''
 # Plot whole 24-hour period
 plt.scatter(hour,doppler, s=3.5,c='black')
@@ -88,6 +113,9 @@ plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
 plt.savefig(outfile,dpi=300)
 plt.show()
+'''
+
+# Time windows ==============================================================================================================================================
 '''
 mask = (hour >= start_decimal) & (hour <= end_decimal)
 
@@ -109,6 +137,7 @@ t_max_utc = decimal_hours_to_utc(t_max)
 
 print(f'Minimum doppler during this window: {doppler_window_min} at {t_min_utc}')
 print(f'Maximum doppler during this window: {doppler_window_max} at {t_max_utc}')
+'''
 
 '''
 plt.scatter(time_window, doppler_window, s=3.5, c='black')
