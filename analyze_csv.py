@@ -74,6 +74,7 @@ plt.tight_layout()
 plt.savefig(outfile,dpi=300)
 plt.show()
 
+'''
 # Convert decimal hours to an actual UTC time
 def decimal_hours_to_utc(h):
    hours = int(h)
@@ -92,5 +93,5 @@ def decimal_hours_to_utc(h):
 
 for t in hour:
     print(decimal_hours_to_utc(t))
-
+'''
 
