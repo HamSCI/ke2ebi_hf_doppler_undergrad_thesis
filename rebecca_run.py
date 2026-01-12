@@ -38,7 +38,7 @@ mpl.rcParams['legend.fontsize'] = 'xx-large'
 channel     = "w2naf"
 start_date  = "2024-5-10"
 end_date    = "2024-5-11"
-frequencies = "3.33,7.85,14.67"
+frequencies = "15"
 
 sYear, sMonth, sDay = map(int, start_date.split("-"))
 eYear, eMonth, eDay = map(int, end_date.split("-"))
