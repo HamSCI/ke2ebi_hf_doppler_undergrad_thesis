@@ -79,19 +79,22 @@ outfile  = os.path.join(
     f"{station}_Doppler_vs_time_{frequency.replace(' ','')}_{date}_{start_utc}-{end_utc}.png"
 )
 
-large_fd = []
+low_fd              = []
+low_fd_timestamps   = []
+large_fd            = []
 large_fd_timestamps = []
 
 doppler_mags = np.abs(doppler)
 for i in range(len(doppler_mags)):
    magnitude = doppler_mags[i]
    timestamp = hour[i]
+   if magnitude < 2.0:
+      low_fd.append(magnitude)
+      low_fd_timestamps.append(timestamp)
    if magnitude >= 2.0:
       large_fd.append(magnitude)
       large_fd_timestamps.append(timestamp)
 
-#print(large_fd)
-print(large_fd_timestamps)
 
 timestamp_min = np.min(large_fd_timestamps)
 timestamp_max = np.max(large_fd_timestamps)
@@ -100,6 +103,17 @@ timestamp_max_utc = decimal_hours_to_utc(timestamp_max)
 
 print("Timestamp min: " + str(timestamp_min_utc))
 print("Timestamp max: " + str(timestamp_max_utc))
+
+total_timestamps = len(hour)
+num_low_fd = len(low_fd)
+num_large_fd = len(large_fd)
+
+percent_low = (num_low_fd / total_timestamps) * 100
+print(percent_low) 
+
+percent_large = (num_large_fd / total_timestamps) * 100
+print(percent_large)
+
 
 
 
