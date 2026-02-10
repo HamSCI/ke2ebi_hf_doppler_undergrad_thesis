@@ -25,49 +25,29 @@ mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
+data_source = 'w2naf_rx888'               # Data directory {callsign}_{instrument}
+callsign    = data_source.split('_')[0]       # Extract callsign from directory name
+instrument  = data_source.split('_')[1]
+sDate       = datetime.datetime(2024,5,10)
+eDate       = datetime.datetime(2024,5,11)
+
+
 station_dct = {}
-sdct    = station_dct['w2naf'] = {}
-sdct['QTH'] = 'Spring Brook, PA'
+sdct        = station_dct[callsign] = {}
+#sdct['QTH'] = 'Spring Brook, PA'
 
 if __name__ == '__main__':
-    output_dir = os.path.join('output','w2naf_test_delete_later')  # Define output directory
+    sDate_str = sDate.strftime('%Y%m%d')
+    eDate_str = eDate.strftime('%Y%m%d')
+    output_dir = os.path.join('output', data_source, f'{data_source}_{sDate_str}-{eDate_str}')
+    #output_dir = os.path.join('output',f'{callsign}_{instrument}_{sDate}_{eDate}')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
-    sDate       = datetime.datetime(2024,5,11)   # Define start date
-    eDate       = datetime.datetime(2024,5,12)   # Define end date
-    data_source = '/data/psws_grapeDRF/w2naf_grape1'                      # Name of data directory: {station}_{instrument}
-    call       = data_source.split('_')[0]      # Extract callsign from data directory name
-    instrument = data_source.split('_')[1]      # Extract instrument from data directory name   
-    station     = call                        
+    
+    #dir_name    = os.path.basename(data_source)  # Gets 'w2naf_grape1'
+    station     = callsign                        
     lat         =  41.335116 # W2NAF
     lon         = -75.600692 # W2NAF
-
-    # Debug: Find the data directory
-    print(f"Current working directory: {os.getcwd()}")
-    print(f"Looking for data_source: {data_source}")
-
-    # Check if it's in current directory
-    if os.path.exists(data_source):
-        print(f"Found in current directory: {data_source}")
-    else:
-        print(f"NOT found in current directory")
-        # Check parent directory or common data locations
-        for test_path in [f'../{data_source}', f'data/{data_source}', f'../data/{data_source}']:
-            if os.path.exists(test_path):
-                print(f"Found at: {test_path}")
-
-    # Recreate properties file if needed
-    if 'WDgrape' in plot_list:
-        data_path = os.path.join('data', 'psws_grapeDRF', 'w2naf_grape1')
-        
-        # Check if properties file exists, if not create it
-        props_file = os.path.join(data_path, 'drf_properties.h5')
-        if not os.path.exists(props_file):
-            print(f"Creating properties file for {data_path}...")
-            grapeDRF.recreate_properties_file(data_path)  # or similar function name
-        
-        gDRF = grapeDRF.GrapeDRF(sDate, eDate, data_source)
 
     figd = {}
     figd['solar_lat']               = lat
@@ -77,8 +57,7 @@ if __name__ == '__main__':
     figd['xlim']                    = (sDate,eDate)
 
     # 'center_frequencies': array([ 2.5 ,  3.33,  5.  ,  7.85, 10.  , 14.67, 15.  , 20.  , 25.  ])
-    cfreqs          = [5.0,10.0,15.0]            # Chose frequencies
-    # cfreqs          = [3.33,7.85,14.67]
+    cfreqs          = [5.0,10.0,15.0]
     plot_list   = []
     plot_list.append('WDgrape')
     # plot_list.append('VLF')
