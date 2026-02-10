@@ -25,7 +25,7 @@ mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
-data_source = 'w2naf_rx888'               # Data directory {callsign}_{instrument}
+data_source = 'k4bse_grape1'               # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]       # Extract callsign from directory name
 instrument  = data_source.split('_')[1]
 sDate       = datetime.datetime(2024,5,10)
@@ -34,7 +34,6 @@ eDate       = datetime.datetime(2024,5,11)
 
 station_dct = {}
 sdct        = station_dct[callsign] = {}
-#sdct['QTH'] = 'Spring Brook, PA'
 
 if __name__ == '__main__':
     sDate_str = sDate.strftime('%Y%m%d')
@@ -46,8 +45,8 @@ if __name__ == '__main__':
     
     #dir_name    = os.path.basename(data_source)  # Gets 'w2naf_grape1'
     station     = callsign                        
-    lat         =  41.335116 # W2NAF
-    lon         = -75.600692 # W2NAF
+    lat         =  33.40
+    lon         = -84.46
 
     figd = {}
     figd['solar_lat']               = lat
@@ -57,7 +56,7 @@ if __name__ == '__main__':
     figd['xlim']                    = (sDate,eDate)
 
     # 'center_frequencies': array([ 2.5 ,  3.33,  5.  ,  7.85, 10.  , 14.67, 15.  , 20.  , 25.  ])
-    cfreqs          = [5.0,10.0,15.0]
+    cfreqs          = [10.0]
     plot_list   = []
     plot_list.append('WDgrape')
     # plot_list.append('VLF')
