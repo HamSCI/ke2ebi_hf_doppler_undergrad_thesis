@@ -25,17 +25,19 @@ mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
 station_dct = {}
-sdct    = station_dct['w2naf'] = {}
+sdct    = station_dct['w2naf_test'] = {}
 sdct['QTH'] = 'Spring Brook, PA'
 
 if __name__ == '__main__':
-    output_dir = os.path.join('output','w2naf_2024-5-10')
+    output_dir = os.path.join('output','w2naf_gmag_2024-5-10')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    print(f"Data directory: {output_dir}")  # Add this line
+
     sDate       = datetime.datetime(2024,5,10)
     eDate       = datetime.datetime(2024,5,11)
-    station     = 'w2naf'
+    station     = 'w2naf_'
     lat         =  41.335116 # W2NAF
     lon         = -75.600692 # W2NAF
 
@@ -47,7 +49,7 @@ if __name__ == '__main__':
     figd['xlim']                    = (sDate,eDate)
 
     # 'center_frequencies': array([ 2.5 ,  3.33,  5.  ,  7.85, 10.  , 14.67, 15.  , 20.  , 25.  ])
-    cfreqs          = [15]
+    cfreqs          = [3.33,7.85,14.67]
     # cfreqs          = [3.33,7.85,14.67]
     plot_list   = []
     plot_list.append('WDgrape')

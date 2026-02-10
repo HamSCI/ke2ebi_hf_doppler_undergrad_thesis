@@ -1,5 +1,5 @@
 #!/bin/env python
-# This is the original script downloaded from Github, no edits
+# This scripts contains edits from original plotting code
 
 import os
 import datetime
@@ -26,17 +26,20 @@ mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
 station_dct = {}
-sdct    = station_dct['w2naf'] = {}
+sdct    = station_dct['w2naf_test'] = {}
 sdct['QTH'] = 'Spring Brook, PA'
 
 if __name__ == '__main__':
-    output_dir = os.path.join('output','w2naf_2024eclipse')
+    output_dir = os.path.join('output','w2naf_test_delete_later')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    sDate       = datetime.datetime(2024,4,8)
-    eDate       = datetime.datetime(2024,4,9)
-    station     = 'w2naf'
+    sDate       = datetime.datetime(2024,5,10)
+    eDate       = datetime.datetime(2024,5,11)
+    data_source = 'w2naf_grape1'                 # Name of data directory: {station}_{instrument}
+    call        = data_source.split('_')[0]      # Extract callsign from data directory name
+    instrument  = data_source.split('_')[1]      # Extract instrument from data directory name
+    station     = call                            
     lat         =  41.335116 # W2NAF
     lon         = -75.600692 # W2NAF
 
@@ -44,11 +47,11 @@ if __name__ == '__main__':
     figd['solar_lat']               = lat
     figd['solar_lon']               = lon
     figd['overlaySolarElevation']   = True
-    figd['overlayEclipse']          = True
+    #figd['overlayEclipse']          = True
     figd['xlim']                    = (sDate,eDate)
 
     # 'center_frequencies': array([ 2.5 ,  3.33,  5.  ,  7.85, 10.  , 14.67, 15.  , 20.  , 25.  ])
-    cfreqs          = [20,15,10,5]
+    cfreqs          = [3.33,7.85,14.67]
     # cfreqs          = [3.33,7.85,14.67]
     plot_list   = []
     plot_list.append('WDgrape')
@@ -92,19 +95,6 @@ if __name__ == '__main__':
             ax.set_title('({!s})'.format(letters[ax_inx-1]),loc='left',fontdict=letter_fdict)
             ax.set_title('{!s} MHz Receiver'.format(cfreq))
 
-            rt_dop_csv = os.path.join('data','shibaji',f'LoS_doppler_{cfreq}.csv')
-            if os.path.exists(rt_dop_csv):
-                print(f'FOUND: {rt_dop_csv}')
-                rt_dop = pd.read_csv(rt_dop_csv)
-                rt_dop['time'] = pd.to_datetime(rt_dop['time'])
-
-                xx = rt_dop['time']
-                yy = rt_dop['fd']
-
-                ax.plot(xx,yy,color='r',lw=5,zorder=1000)
-            else:
-                print(f'NOT FOUND: {rt_dop_csv}')
-
     # Finalize Figure ######################
     for ax_inx,ax in enumerate(axs):
         ax.set_xlim(sDate,eDate)
@@ -124,9 +114,9 @@ if __name__ == '__main__':
 
     sdct    = station_dct.get(station,{})
     if 'QTH' in sdct:
-        stxt = '{!s} ({!s})'.format(station.upper(),sdct['QTH'])
+        stxt = '{!s} ({!s}) ({!s})'.format(station.upper(),instrument.upper(),sdct['QTH'])
     else:
-        stxt = station.upper()
+        stxt = '{!s} ({!s})'.format(station.upper(),instrument.upper())
 
     txt = []
     txt.append(stxt)

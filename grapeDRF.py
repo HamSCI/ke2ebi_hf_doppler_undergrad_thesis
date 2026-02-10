@@ -220,7 +220,7 @@ class GrapeDRF(object):
             xtkls.append(xtkl)
         ax.set_xticks(xticks)
         ax.set_xticklabels(xtkls)
-
+'''
 if __name__ == '__main__':
     station     = 'w2naf'
     sDate       = datetime.datetime(2024,4,8)
@@ -237,3 +237,4 @@ if __name__ == '__main__':
     gDRF        = GrapeDRF(sDate,eDate,station)
     gDRF.plot_figure(**figd)
     import ipdb; ipdb.set_trace()
+'''
