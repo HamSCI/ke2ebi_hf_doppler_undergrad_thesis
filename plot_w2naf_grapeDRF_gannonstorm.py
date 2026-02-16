@@ -1,5 +1,7 @@
 #!/bin/env python
 # This scripts contains edits from original plotting code
+#  1) Defined inputs outside of main "if" indent
+#  2)  
 
 import os
 import datetime
@@ -14,7 +16,7 @@ from matplotlib import pyplot as plt
 
 import grapeDRF
 
-letters = 'abcdefghijklmnopqrztuvwxyz'
+letters = 'abcdefghijklmnopqrtuvwxyz'
 
 mpl.rcParams['font.size']       = 12
 mpl.rcParams['font.weight']     = 'bold'
@@ -25,11 +27,14 @@ mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
-data_source = 'k4bse_grape1'               # Data directory {callsign}_{instrument}
-callsign    = data_source.split('_')[0]       # Extract callsign from directory name
-instrument  = data_source.split('_')[1]
-sDate       = datetime.datetime(2024,5,10)
-eDate       = datetime.datetime(2024,5,11)
+data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
+callsign    = data_source.split('_')[0]         # Extract callsign from directory name
+instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
+sDate       = datetime.datetime(2024,5,13)
+eDate       = datetime.datetime(2024,5,14)
+lat         =  41.335116 # W2NAF
+lon         =  -75.600692 # W2NAF
+frequencies = [15]
 
 
 station_dct = {}
@@ -43,20 +48,15 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    #dir_name    = os.path.basename(data_source)  # Gets 'w2naf_grape1'
     station     = callsign                        
-    lat         =  33.40
-    lon         = -84.46
-
     figd = {}
     figd['solar_lat']               = lat
     figd['solar_lon']               = lon
     figd['overlaySolarElevation']   = True
-    #figd['overlayEclipse']          = True
     figd['xlim']                    = (sDate,eDate)
 
     # 'center_frequencies': array([ 2.5 ,  3.33,  5.  ,  7.85, 10.  , 14.67, 15.  , 20.  , 25.  ])
-    cfreqs          = [10.0]
+    cfreqs          = frequencies
     plot_list   = []
     plot_list.append('WDgrape')
     # plot_list.append('VLF')
@@ -123,7 +123,10 @@ if __name__ == '__main__':
     txt.append(stxt)
     if 'QTH' in sdct:
         txt.append(sdct['QTH'])
-    txt.append(sDate.strftime('%d %b %Y'))
+    if sDate.date() == eDate.date():
+        txt.append(sDate.strftime('%d %b %Y'))
+    else:
+        txt.append('{} - {}'.format(sDate.strftime('%d %b %Y'), eDate.strftime('%d %b %Y')))
     fontdict    = {'size':42,'weight':'bold'}
     fig.text(0.5,1.,'\n'.join(txt),fontdict=fontdict,ha='center',va='bottom')
 
