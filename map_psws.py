@@ -26,9 +26,9 @@ lat_CHU = 45.2964
 lon_CHU = -75.7561
 
 # Messy code start ======================================================
-all_stations = []
-all_lats = []
-all_lons = []
+all_psws = []
+all_psws_lats = []
+all_psws_lons = []
 all_invl = []
 all_dist = []
 all_az = []
@@ -36,26 +36,26 @@ all_lat_mid = []
 all_lon_mid = []
 
 for i in range(len(callsign)):
-    call_1 = callsign[i]                                     
-    lat_1 = lat[i]
-    lon_1 = lon[i]
+    psws_call = callsign[i]                                     
+    psws_lat = lat[i]
+    psws_lon = lon[i]
     #calculate distance and azimuth
-    invl = geod.InverseLine(lat_WWV,lon_WWV,lat_1,lon_1)         
+    invl = geod.InverseLine(lat_WWV,lon_WWV,psws_lat,psws_lon)         
     dist = invl.s13*1e-3  # Distance in km
     az = invl.azi1
     #calculate midpoint
-    #tmp = invl.Position(invl.s13/2,Geodesic.STANDARD)
-    #lat_mid = tmp['lat2']
-    #lon_mid = tmp['lon2']
+    tmp = invl.Position(invl.s13/2,Geodesic.STANDARD)
+    lat_mid = tmp['lat2']
+    lon_mid = tmp['lon2']
     #append to lists
-    all_stations.append(call_1)
-    all_lats.append(lat_1)
-    all_lons.append(lon_1)
+    all_psws.append(psws_call)
+    all_psws_lats.append(psws_lat)
+    all_psws_lons.append(psws_lon)
     all_invl.append(invl)
     all_dist.append(dist)
     all_az.append(az)
-    #all_lat_mid.append(lat_mid)
-    #all_lon_mid.append(lon_mid)
+    all_lat_mid.append(lat_mid)
+    all_lon_mid.append(lon_mid)
 
 # Messy code end ========================================================
 
@@ -86,8 +86,8 @@ ax  = fig.add_subplot(111, projection=ccrs.PlateCarree())
 ax.scatter(lon_WWV, lat_WWV, marker='*', s=500, label=call_WWV)
 ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU)
 
-for i in range(len(all_stations)):
-    ax.scatter(all_lons[i],all_lats[i],marker='^',s=250,label=all_stations[i])
+for i in range(len(all_psws)):
+    ax.scatter(all_psws_lons[i],all_psws_lats[i],marker='^',s=250,label=all_psws[i])
 
 ax.add_feature(cartopy.feature.COASTLINE)
 ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
