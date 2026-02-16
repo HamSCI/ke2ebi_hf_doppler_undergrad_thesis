@@ -68,12 +68,7 @@ for i in range(len(callsign)):
     all_psws.append(psws_call)
     all_psws_lats.append(psws_lat)
     all_psws_lons.append(psws_lon)
-
-    #append to lists
-    all_psws.append(psws_call)
-    all_psws_lats.append(psws_lat)
-    all_psws_lons.append(psws_lon)
-    
+   
     # WWV data
     all_invl_WWV.append(invl_WWV)
     all_dist_WWV.append(dist_WWV)
@@ -88,6 +83,18 @@ for i in range(len(callsign)):
     all_lat_mid_CHU.append(lat_mid_CHU)
     all_lon_mid_CHU.append(lon_mid_CHU)
 # Messy code end ========================================================
+
+# Print summary table
+print("\n" + "="*100)
+print(f"{'Station':<10} {'WWV Dist (km)':<15} {'WWV Midpoint':<25} {'CHU Dist (km)':<15} {'CHU Midpoint':<25}")
+print("="*100)
+
+for i in range(len(all_psws)):
+    wwv_mid = f"({all_lat_mid_WWV[i]:.2f}, {all_lon_mid_WWV[i]:.2f})"
+    chu_mid = f"({all_lat_mid_CHU[i]:.2f}, {all_lon_mid_CHU[i]:.2f})"
+    print(f"{all_psws[i]:<10} {all_dist_WWV[i]:<15.2f} {wwv_mid:<25} {all_dist_CHU[i]:<15.2f} {chu_mid:<25}")
+
+print("="*100 + "\n")
 
 ## World
 #xlim = (-180, 180)
@@ -114,25 +121,25 @@ range_step = 1
 for i in range(len(all_psws)):
     ax.scatter(all_psws_lons[i],all_psws_lats[i],marker='^',s=250,label=all_psws[i])
 
-    # Plot WWV paths and midpoints
+# Plot WWV paths and midpoints
+for i in range(len(all_psws)):  # <-- This line was missing!
     if i == 0:
-        ax.scatter(all_lon_mid[i], all_lat_mid[i], s=250, label='Midpoint')
+        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, label='WWV Midpoint')
     else:
-        ax.scatter(all_lon_mid[i], all_lat_mid[i], s=250)
+        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250)
         
-    invl = all_invl_WWV[i]  # Make sure you're using the correct one for station i
-    ranges = np.linspace(0, invl.s13, 100)  # 100 points across full path in meters
-    glats = []
+    invl = all_invl_WWV[i]
+    ranges = np.linspace(0, invl.s13, 100)
+    glats = []  # <-- Also fixed typo: was 'lats'
     glons = []
     for s in ranges:
         tmp = invl.Position(s, Geodesic.STANDARD)
         glats.append(tmp['lat2'])
         glons.append(tmp['lon2'])
-        
-    ax.plot(glons,glats,lw=3,transform=ccrs.PlateCarree())
+    
+    ax.plot(glons, glats, lw=3, color='blue', transform=ccrs.PlateCarree())  # <-- Moved outside inner loop and added color
 
 # Plot CHU paths and midpoints
-
 for i in range(len(all_psws)):
     if i == 0:
         ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='red', label='CHU Midpoint')
@@ -150,7 +157,7 @@ for i in range(len(all_psws)):
         
     ax.plot(glons, glats, lw=3, color='red', transform=ccrs.PlateCarree())
 
- # Finalize Figure
+# Finalize Figure
 ax.add_feature(cartopy.feature.COASTLINE)
 ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
 ax.set_title('')
