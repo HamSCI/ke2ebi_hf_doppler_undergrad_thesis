@@ -9,20 +9,21 @@ from matplotlib import pyplot as plt
 import cartopy  
 import cartopy.crs as ccrs
 
+filename = 'coords_sheet.txt'
+data     = np.genfromtxt(filename, dtype=[('callsign','U10'),('lat',float),('lon',float)], encoding='utf-8', ndmin=1, skip_header=1)  #U10 allows up to 10 characters; may make it bigger
 
-filename = 'coords_example_sheet.txt'
-data     = np.genfromtxt(filename, dtype=None, encoding='utf-8')
+callsign = data['callsign']
+lat      = data['lat']
+lon      = data['lon']
 
-print(data[0:])
-'''
-callsign = data['f0']
-lat      = data['f1']
-long     = data['f2']
+# Transmitters
+call_WWV = 'WWV'
+lat_WWV  = 40.6683
+lon_WWV  = -105.0384
 
-# WWV
-call_0 = 'WWV'
-lat_0  = 40.6683
-lon_0  = -105.0384
+call_CHU = 'CHU'
+lat_CHU = 45.2964
+lon_CHU = -75.7561
 
 # Messy code start ======================================================
 all_stations = []
@@ -34,12 +35,12 @@ all_az = []
 all_lat_mid = []
 all_lon_mid = []
 
-for i in range(len(station_name)):
-    call_1 = station_name[i]                                     
-    lat_1 = latitude[i]
-    lon_1 = longitude[i]
+for i in range(len(callsign)):
+    call_1 = callsign[i]                                     
+    lat_1 = lat[i]
+    lon_1 = lon[i]
     #calculate distance and azimuth
-    invl = geod.InverseLine(lat_0,lon_0,lat_1,lon_1)         
+    invl = geod.InverseLine(lat_WWV,lon_WWV,lat_1,lon_1)         
     dist = invl.s13*1e-3  # Distance in km
     az = invl.azi1
     #calculate midpoint
@@ -57,9 +58,6 @@ for i in range(len(station_name)):
     #all_lon_mid.append(lon_mid)
 
 # Messy code end ========================================================
-
-
-
 
 # Set up figure
 plt.rcParams['font.size']        = 18
@@ -85,7 +83,11 @@ fig = plt.figure(figsize=(15,8))
 ax  = fig.add_subplot(111, projection=ccrs.PlateCarree())
 
 # Add markers for transmitter, receiver, and midpoint
-ax.scatter(lon_0, lat_0, marker='*', s=500, label=call_0)
+ax.scatter(lon_WWV, lat_WWV, marker='*', s=500, label=call_WWV)
+ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU)
+
+for i in range(len(all_stations)):
+    ax.scatter(all_lons[i],all_lats[i],marker='^',s=250,label=all_stations[i])
 
 ax.add_feature(cartopy.feature.COASTLINE)
 ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
@@ -97,4 +99,3 @@ ax.set_ylim(ylim)
 
 plt.tight_layout()
 plt.show()
-'''
