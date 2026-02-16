@@ -117,9 +117,12 @@ ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU)
 
 range_step = 1
 
-# Plot PSWS
+# Plot PSWS (modified section)
 for i in range(len(all_psws)):
-    ax.scatter(all_psws_lons[i],all_psws_lats[i],marker='^',s=250,label=all_psws[i])
+    if i == 0:
+        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250, label='PSWS Stations')
+    else:
+        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250)  # No label for subsequent stations
 
 # Plot WWV paths and midpoints
 for i in range(len(all_psws)):  # <-- This line was missing!
@@ -166,5 +169,7 @@ ax.legend(loc='lower right',prop={'size':'x-small','weight':'normal'},framealpha
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 
+
 plt.tight_layout()
+plt.savefig('./output/maps/psws_map.png', dpi=300, bbox_inches='tight')
 plt.show()
