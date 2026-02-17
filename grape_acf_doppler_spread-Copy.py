@@ -84,7 +84,7 @@ frequency=freqList[freq_index]        # This comes from command line argument an
 csv_dir=os.path.join(output_dir,'csv',theCallsign)
 if not os.path.exists(csv_dir):
   os.makedirs(csv_dir)
-csv_filename=csv_dir+'/ACF_FWL_data_' + "_" + str(frequency) + "MHz_" + date + ".csv"    # 
+csv_filename=csv_dir+'/ACF_FWL_data_' + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" + f"{sys.argv[4]}" + ".csv"    # 
 
 time_window=60                               # 60 seconds is default for each processed data ensemble, but could be changed for special uses
 length=int(np.floor(length*(60/time_window))) # in case time window changed, then alter length accordingly
@@ -159,7 +159,7 @@ plt.xlabel(xaxis_title)
 plt.ylabel("Doppler shift (Hz)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
 
 
 with open(plot_dir + f"_ACF_Doppler_{frequency}MHz_{date}.csv", "w", newline="") as f:
