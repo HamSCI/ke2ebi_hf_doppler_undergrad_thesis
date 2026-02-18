@@ -170,7 +170,7 @@ with open(plot_dir + f"_ACF_Doppler_{frequency}MHz_{date}.csv", "w", newline="")
 
 #=========================================================================================================================
 
-'''
+
 fig, ax= plt.subplots()
 
 plt.plot(time[0:length],spread[0:length],'.',color="black", label='Frequency spread (mHz)')
@@ -181,7 +181,7 @@ plt.ylim(0,3000)
 plt.ylabel("Frequency spread (mHz)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
 
 fig, ax= plt.subplots()
 
@@ -192,7 +192,6 @@ plt.xlabel(xaxis_title)
 plt.ylabel("Signal+Noise level (dB)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Level" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.savefig(plot_dir +"/ACF_Level" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
 
 plt.show()
-'''

@@ -67,8 +67,8 @@ def utc_to_decimal_hours(t):
    return t.hour + t.minute/60 + t.second/3600
 
 # Input time window
-start_time_utc = datetime.time(0,0,0)               # Edit inputs here
-end_time_utc   = datetime.time(17,10,0)             # Edit inputs here
+start_time_utc = datetime.time(0,0,0)         # Edit inputs here
+end_time_utc   = datetime.time(17,10,0)    
 
 start_time_decimal = utc_to_decimal_hours(start_time_utc)
 end_time_decimal   = utc_to_decimal_hours(end_time_utc)
@@ -76,14 +76,14 @@ end_time_decimal   = utc_to_decimal_hours(end_time_utc)
 # Set output directory to save plots in and name output .png
 '''
 plot_dir = os.path.join(output_dir,'plots',station)
-os.makedirs(plot_dir,exist_ok=True)
+os.makedirs(plot_dir,exist_ok=True
 outfile  = os.path.join(
     plot_dir,
     f"{station}_Doppler_vs_time_{frequency.replace(' ','')}_{date}_{start_time_utc}-{end_time_utc}.png"
 '''
 
 # Separate dop shifts < 2 (low_fd) and dop shifts > 2 (large_fd) and find min/max of both lists
-'''
+
 low_fd              = []
 low_fd_timestamps   = []
 large_fd            = []
@@ -106,8 +106,8 @@ timestamp_max = np.max(large_fd_timestamps)
 timestamp_min_utc = decimal_hours_to_utc(timestamp_min)
 timestamp_max_utc = decimal_hours_to_utc(timestamp_max)
 
-print("Timestamp min: " + str(timestamp_min_utc))
-print("Timestamp max: " + str(timestamp_max_utc))
+print("Timestamp of min"+str(timestamp_min_utc))
+print("Timestamp of max"+str(timestamp_max_utc))
 
 total_timestamps = len(hour)
 num_low_fd = len(low_fd)
@@ -119,7 +119,7 @@ print(percent_low)
 
 percent_large = (num_large_fd / total_timestamps) * 100
 print(percent_large)
-'''
+
 
 
 # Plot whole 24-hour period
@@ -135,7 +135,7 @@ plt.show()
 '''
 
 # Time windows ==============================================================================================================================================
-
+'''
 mask = (hour >= start_time_decimal) & (hour <= end_time_decimal)
 
 time_window = hour[mask]
@@ -156,8 +156,9 @@ t_max_utc = decimal_hours_to_utc(t_max)
 
 print(f'Minimum doppler during this window: {doppler_window_min} at {t_min_utc}')
 print(f'Maximum doppler during this window: {doppler_window_max} at {t_max_utc}')
+'''
 
-
+'''
 plt.scatter(time_window, doppler_window, s=3.5, c='black')
 plt.title(f'Doppler Shift vs. Time (UTC)\nFrequency: {frequency} | Date: {date}')
 plt.xlabel('Hour (UTC)')
@@ -166,3 +167,4 @@ plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
 plt.savefig(outfile,dpi=300)
 plt.show()
+'''
