@@ -112,24 +112,24 @@ fig = plt.figure(figsize=(15,8))
 ax  = fig.add_subplot(111, projection=ccrs.PlateCarree())
 
 # Add markers for transmitter, receiver, and midpoint
-ax.scatter(lon_WWV, lat_WWV, marker='*', s=500, label=call_WWV)
-ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU)
+ax.scatter(lon_WWV, lat_WWV, marker='*', s=500, label=call_WWV, color='yellow')
+ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU, color='lime')
 
 range_step = 1
 
 # Plot PSWS (modified section)
 for i in range(len(all_psws)):
     if i == 0:
-        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250, label='PSWS Stations')
+        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250, color='red', label='W2NAF')
     else:
         ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250)  # No label for subsequent stations
 
 # Plot WWV paths and midpoints
-for i in range(len(all_psws)):  # <-- This line was missing!
+for i in range(len(all_psws)):  
     if i == 0:
-        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, label='WWV Midpoint')
+        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, color='black')
     else:
-        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250)
+        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, color='black')
         
     invl = all_invl_WWV[i]
     ranges = np.linspace(0, invl.s13, 100)
@@ -140,14 +140,14 @@ for i in range(len(all_psws)):  # <-- This line was missing!
         glats.append(tmp['lat2'])
         glons.append(tmp['lon2'])
     
-    ax.plot(glons, glats, lw=3, color='blue', transform=ccrs.PlateCarree())  # <-- Moved outside inner loop and added color
+    ax.plot(glons, glats, lw=3, color='black', transform=ccrs.PlateCarree())  # <-- Moved outside inner loop and added color
 
 # Plot CHU paths and midpoints
 for i in range(len(all_psws)):
     if i == 0:
-        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='red', label='CHU Midpoint')
+        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='black')
     else:
-        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='red')
+        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='black')
         
     invl = all_invl_CHU[i]
     ranges = np.linspace(0, invl.s13, 100)
@@ -158,7 +158,7 @@ for i in range(len(all_psws)):
         glats.append(tmp['lat2'])
         glons.append(tmp['lon2'])
         
-    ax.plot(glons, glats, lw=3, color='red', transform=ccrs.PlateCarree())
+    ax.plot(glons, glats, lw=3, color='black', transform=ccrs.PlateCarree())
 
 # Finalize Figure
 ax.add_feature(cartopy.feature.COASTLINE)

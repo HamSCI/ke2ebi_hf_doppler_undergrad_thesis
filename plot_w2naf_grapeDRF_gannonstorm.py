@@ -30,11 +30,11 @@ mpl.rcParams['legend.fontsize'] = 'xx-large'
 data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,11)
-eDate       = datetime.datetime(2024,5,12)
+sDate       = datetime.datetime(2024,5,8)
+eDate       = datetime.datetime(2024,5,9)
 lat         =  41.335116 # W2NAF
 lon         =  -75.600692 # W2NAF
-frequencies = [15]
+frequencies = [14.67]
 
 
 station_dct = {}

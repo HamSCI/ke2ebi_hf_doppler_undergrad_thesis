@@ -4,14 +4,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 import datetime
 
-file_name = 'May_2024_quiet_days.csv'
-data = np.genfromtxt(file_name, delimiter=',', skip_header=2)
+# Load data from .csv ================================================================================================================================
 
-timestamp = data[:,0]
-avg_dop   = data[:,8]
+file_name = 'W2NAF_May_2024_quiet_days(15MHz).csv'
+data = np.genfromtxt(file_name, delimiter=',', skip_header=5)
 
-'''
-plt.scatter(timestamp, avg_dop, color='black', label='May 2024 Quiet Time Average', s=1.0)
+timestamp   = data[:,0]
+avg_dop     = data[:,8]
+lower_error = data[:,10]    # average + stdev
+upper_error = data[:,11]    # average - stdev
+
+# Plot entire spectrogram =========================================================================================================================================
+
+plt.scatter(timestamp, avg_dop, color='black', label='May 2024 Quiet Time Average', s=1.5)
+plt.scatter(timestamp, lower_error, color='red', label='STDEV', s=0.25)
+plt.scatter(timestamp, upper_error, color='blue', s=0.25)
 plt.title('May 2024 Quiet Time Average')
 plt.suptitle('W2NAF at 15.0 MHz', fontsize=12)
 plt.xlabel('Time (UTC)')
@@ -25,7 +32,7 @@ plt.show()
 #print("Min: " + str(np.min(avg_dop)))
 #print("Max: " + str(np.max(avg_dop)))
 
-
+# Datetime Conversions =======================================================================================================================================
 
 # Convert decimal hours to UTC format
 def decimal_hours_to_utc(h):
@@ -42,17 +49,18 @@ def decimal_hours_to_utc(h):
       hours = 0
    return datetime.time(hour=hours,minute=minutes,second=seconds)
 
-# Input time window
-start_time_utc = datetime.time(12,0,0)         # Edit inputs here
-end_time_utc   = datetime.time(23,59,0)    
-
 #Convert UTC format to decimal hours
 def utc_to_decimal_hours(t):
    return t.hour + t.minute/60 + t.second/3600
 
+# =============================================================================================================================================================
+
+# Input time window
+start_time_utc = datetime.time(12,0,0)         # Edit inputs here
+end_time_utc   = datetime.time(23,59,0)    
+
 start_time_decimal = utc_to_decimal_hours(start_time_utc)
 end_time_decimal   = utc_to_decimal_hours(end_time_utc)
-
 
 time_window = []
 doppler_window = []
@@ -76,3 +84,4 @@ plt.ylabel('Doppler shift (Hz)')
 plt.savefig("recent.png", dpi=600)
 plt.show()
 
+'''
