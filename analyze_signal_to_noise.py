@@ -11,7 +11,7 @@ base_directory = './'
 csv_dir        = os.path.join(base_directory,'output','csv',station)
 output_dir     = os.path.join(base_directory,'output')
 
-file_name = 'ACF_FWL_data__15.0MHz_2024-05-25.csv'
+file_name = 'ACF_FWL_data__15.0MHz_2024-05-11.csv'
 filepath = os.path.join(csv_dir, file_name)
 
 date_str = file_name.split('_')[-1].replace('.csv', '')
@@ -32,8 +32,8 @@ def utc_to_decimal_hours(t):
 #=====================================================================================================================================
 
 # Input time window
-start_time_utc = datetime.time(7,0,0)
-end_time_utc   = datetime.time(10,0,0)
+start_time_utc = datetime.time(18,0,0)     # input start of time window here
+end_time_utc   = datetime.time(22,0,0)    # input end of time window here
 
 # Convert to decimal hours
 start_time_decimal = utc_to_decimal_hours(start_time_utc)
@@ -43,6 +43,7 @@ end_time_decimal   = utc_to_decimal_hours(end_time_utc)
 time_window = []
 sn_window   = []
 
+# Pull data points only inside the desired time window
 for i in range(len(timestamp)):
    time = timestamp[i]
    sn   = level[i]
@@ -55,9 +56,18 @@ max_idx  = np.argmax(sn_window)
 max_time = time_window[max_idx]
 max_val  = sn_window[max_idx]
 
-hours   = int(max_time)
-minutes = int((max_time % 1) * 60)
-print(f'Max S+N: {max_val:.2f} dB at {hours:02d}:{minutes:02d} UTC')
+hours1   = int(max_time)
+minutes1 = int((max_time % 1) * 60)
+print(f'Max S+N: {max_val:.2f} dB at {hours1:02d}:{minutes1:02d} UTC')
+
+# Find minimum S+N Level in that time window
+min_idx  = np.argmin(sn_window)
+min_time = time_window[min_idx]
+min_val  = sn_window[min_idx]
+
+hours2   = int(min_time)
+minutes2 = int((min_time % 1) * 60)
+print(f'Min S+N: {min_val:.2f} dB at {hours2:02d}:{minutes2:02d} UTC')
 
 # Create figure
 plt.scatter(time_window, sn_window, color='black', s=2.0)

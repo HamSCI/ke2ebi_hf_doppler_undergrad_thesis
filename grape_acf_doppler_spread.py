@@ -155,6 +155,7 @@ plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequen
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
+plt.ylim(-4,4)
 plt.ylabel("Doppler shift (Hz)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()

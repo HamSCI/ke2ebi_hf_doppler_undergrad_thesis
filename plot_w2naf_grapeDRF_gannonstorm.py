@@ -30,11 +30,12 @@ mpl.rcParams['legend.fontsize'] = 'xx-large'
 data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,8)
-eDate       = datetime.datetime(2024,5,9)
+sDate       = datetime.datetime(2024,5,7)
+eDate       = datetime.datetime(2024,5,10)
+num_days    = 3
 lat         =  41.335116 # W2NAF
 lon         =  -75.600692 # W2NAF
-frequencies = [14.67]
+frequencies = [15.0]
 
 
 station_dct = {}
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     txt.append(stxt)
     if 'QTH' in sdct:
         txt.append(sdct['QTH'])
-    if sDate.date() == eDate.date():
+    if num_days == 1:
         txt.append(sDate.strftime('%d %b %Y'))
     else:
         txt.append('{} - {}'.format(sDate.strftime('%d %b %Y'), eDate.strftime('%d %b %Y')))
