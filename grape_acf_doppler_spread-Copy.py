@@ -30,6 +30,8 @@ import maidenhead as mh           # lat lon to locator, used if locator not pres
 
 import load_metadata              # this is a module in this directory to read digital RF metadata
 
+import matplotlib.ticker as ticker
+
 base_directory='./'
 data_dir=os.path.join(base_directory,'data','psws_grapeDRF')
 output_dir=os.path.join(base_directory,'output')
@@ -141,57 +143,94 @@ with open(csv_filename, 'w', encoding='UTF8',) as out_file:     # open a csv fil
 ###########################################
 # Plots of Doppler, Spread and Level
 ###########################################
-plot_dir=os.path.join(output_dir,'plots',theCallsign)   # plots go into a subdirectory by callsign
+
+plot_dir = os.path.join(output_dir, 'plots', theCallsign)
 if not os.path.exists(plot_dir):
-  os.makedirs(plot_dir)
+    os.makedirs(plot_dir)
 
-xaxis_title="Time on " + date + " (hours UTC)"
+xaxis_title = "Time on " + date + " (hours UTC)"
+end_hours = hours_offset + length/60
 
-end_hours=hours_offset+length/60  # for plot time axis limits
+# --- Time formatter ---
+def format_time(x, pos=None):
+    hours = int(x) % 24
+    minutes = int((x % 1) * 60)
+    return f"{hours:02d}:{minutes:02d}"
 
-fig, ax= plt.subplots()
+def apply_xaxis_format(ax):
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
+    ax.set_xlim(0, 23 + 59/60)
+    ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])
 
-# Plots doppler shift vs. time ===========================================================================================
-plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequency (Hz)')  
+# --- SSC marker ---
+SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
+def utc_to_decimal_hours(t):
+    return t.hour + t.minute/60 + t.second/3600
+SSC_decimal = utc_to_decimal_hours(SSC)
+ssc_label = f'SSC {SSC.strftime("%H:%M")} UTC'
+
+# --- Main Phase Marker ---
+#main_phase_start = datetime.strptime("17:10:00", "%H:%M:%S").time()
+main_phase_end = datetime.strptime("2:15:00", "%H:%M:%S").time()
+def utc_to_decimal_hours(t):
+    return t.hour + t.minute/60 + t.second/3600
+main_phase_decimal = utc_to_decimal_hours(main_phase_end)
+main_phase_label = f'Main Phase End {main_phase_end.strftime("%H:%M")} UTC'
+
+# --- Plot 1: Doppler only ---
+plt.figure()
+ax = plt.gca()
+apply_xaxis_format(ax)
+plt.plot(time[0:length], freq[0:length], '.', color="black", label='Doppler frequency (Hz)')
+plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
-#plt.xlim(hours_offset,end_hours)
+plt.ylim(-4, 4)
 plt.ylabel("Doppler shift (Hz)")
+plt.legend(loc='best', fontsize=8)
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
+plt.savefig(plot_dir + "/ACF_Doppler_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.show()
 
-
-with open(plot_dir + f"_ACF_Doppler_{frequency}MHz_{date}.csv", "w", newline="") as f:
-  writer = csv.writer(f)
-  writer.writerow(["Time", "Doppler_shift_Hz"])
-  for t, d in zip(time[:length], freq[:length]):
-    writer.writerow([t, d])
-
-#=========================================================================================================================
-
-
-fig, ax= plt.subplots()
-
-plt.plot(time[0:length],spread[0:length],'.',color="black", label='Frequency spread (mHz)')
-plt.suptitle("ACF Spread " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
-plt.xlabel(xaxis_title)
-#plt.xlim(hours_offset,end_hours)
-plt.ylim(0,3000)
-plt.ylabel("Frequency spread (mHz)")
-plt.gcf().set_size_inches(8, 3, forward=True)
-plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
-
-fig, ax= plt.subplots()
-
-plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')  
+# --- Plot 2: Signal Level only ---
+plt.figure()
+ax = plt.gca()
+apply_xaxis_format(ax)
+plt.plot(time[0:length], dB_level[0:length], '.', color="black", label='Signal level (dB)')
+plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
-#plt.xlim(hours_offset,end_hours)
 plt.ylabel("Signal+Noise level (dB)")
+plt.legend(loc='best', fontsize=8)
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Level" + "_" + str(frequency) + "MHz_" + f"{date}_" + f"{hours_offset}" + "-" +  f"{sys.argv[4]}" + ".png", dpi=600)
+plt.savefig(plot_dir + "/ACF_Level_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.show()
 
+# --- Plot 3: Combined Doppler + Signal Level (stacked) ---
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
+
+# Top panel: Doppler
+ax1.plot(time[0:length], freq[0:length], '.', color="black", label='Doppler frequency (Hz)')
+#ax1.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label=ssc_label)
+ax1.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+ax1.set_ylim(-4, 4)
+ax1.set_ylabel("Doppler shift (Hz)")
+ax1.legend(loc='best', fontsize=8)
+
+# Bottom panel: Signal Level
+ax2.plot(time[0:length], dB_level[0:length], '.', color="black", label='Signal level (dB)')
+#ax2.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label=ssc_label)
+ax2.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+ax2.set_ylabel("Signal+Noise level (dB)")
+ax2.legend(loc='best', fontsize=8)
+
+# Shared x-axis formatting (only needed on bottom panel)
+apply_xaxis_format(ax2)
+ax2.set_xlabel(xaxis_title)
+
+fig.suptitle("ACF Doppler & Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=14, weight='bold')
+plt.tight_layout()
+plt.savefig(plot_dir + "/ACF_Combined_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
 plt.show()

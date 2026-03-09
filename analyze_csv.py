@@ -123,7 +123,7 @@ print(percent_large)
 
 
 # Plot whole 24-hour period
-'''
+
 plt.scatter(hour,doppler, s=3.5,c='black')
 plt.title(f'Doppler Shift vs. Time\nFrequency: {frequency} | Date: {date} ')
 plt.xlabel('Hour (UTC)')

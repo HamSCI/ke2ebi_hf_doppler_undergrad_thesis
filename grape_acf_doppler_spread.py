@@ -23,12 +23,14 @@ import numpy as np
 import pylab as plt
 import csv                         # to write csv file for plotting and comparison in Excel
 from datetime import datetime
+from datetime import time
 import pytz
 import sys
 import os
 import maidenhead as mh           # lat lon to locator, used if locator not present, eg Grape 1 DRF metadata
 
 import load_metadata              # this is a module in this directory to read digital RF metadata
+import matplotlib.ticker as ticker
 
 base_directory='./'
 data_dir=os.path.join(base_directory,'data','psws_grapeDRF')
@@ -149,9 +151,34 @@ xaxis_title="Time on " + date + " (hours UTC)"
 
 end_hours=hours_offset+length/60  # for plot time axis limits
 
-fig, ax= plt.subplots()   #
+#fig, ax= plt.subplots()   #
+#====================================================================
+def apply_xaxis_format(ax):
+    """Reusable formatter for all plots"""
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
+    ax.set_xlim(0, 23 + 59/60)
+    ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])
+
+def format_time(x, pos=None):
+    hours = int(x) % 24
+    minutes = int((x % 1) * 60)
+    return f"{hours:02d}:{minutes:02d}"
+
+ax = plt.gca()
+apply_xaxis_format(ax)
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
+# Set x-axis range and ticks
+ax.set_xlim(0, 23 + 59/60)
+ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])  # last tick = 23:59
+#====================================================================
+
+SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
+def utc_to_decimal_hours(t):
+   return t.hour + t.minute/60 + t.second/3600
+SSC_decimal = utc_to_decimal_hours(SSC)
 
 plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequency (Hz)')  
+plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
@@ -159,10 +186,12 @@ plt.ylim(-4,4)
 plt.ylabel("Doppler shift (Hz)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+#plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
+plt.savefig('recent2.png')
+plt.show()
 
-fig, ax= plt.subplots()
-
+#fig, ax= plt.subplots()
+'''
 plt.plot(time[0:length],spread[0:length],'.',color="black", label='Frequency spread (mHz)')
 plt.suptitle("ACF Spread " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
@@ -174,8 +203,10 @@ plt.tight_layout()
 plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
 
 fig, ax= plt.subplots()
-
+'''
+apply_xaxis_format(ax)
 plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')  
+plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
