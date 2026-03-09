@@ -1,13 +1,13 @@
 # Plotting PSWS on map of contiguous US
 
 from geographiclib.geodesic import Geodesic
-geod = Geodesic.WGS84
-
 import numpy as np
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 import cartopy  
 import cartopy.crs as ccrs
+
+geod = Geodesic.WGS84
 
 filename = 'coords_sheet.txt'
 data     = np.genfromtxt(filename, dtype=[('callsign','U10'),('lat',float),('lon',float)], encoding='utf-8', ndmin=1, skip_header=1)  #U10 allows up to 10 characters; may make it bigger
@@ -17,84 +17,46 @@ lat      = data['lat']
 lon      = data['lon']
 
 # Transmitters
-call_WWV = 'WWV'
-lat_WWV  = 40.6683
-lon_WWV  = -105.0384
+transmitters = {
+    'WWV': {'lat': 40.6683, 'lon': -105.0384, 'color': 'yellow'},
+    'CHU': {'lat': 45.2964, 'lon': -75.7561, 'color': 'lime'}
+}
 
-call_CHU = 'CHU'
-lat_CHU = 45.2964
-lon_CHU = -75.7561
+# Path colors
+path_colors = {'WWV': 'royalblue', 'CHU': 'firebrick'}
+mid_colors  = {'WWV': 'royalblue', 'CHU': 'firebrick'}
 
-# Messy code start - WWV ======================================================
-# WWV lists
-all_psws = []
-all_psws_lats = []
-all_psws_lons = []
-all_invl_WWV = []
-all_dist_WWV = []
-all_az_WWV = []
-all_lat_mid_WWV = []
-all_lon_mid_WWV = []
+# --- Compute geodesic data ---
+def compute_geodesic(tx_lat, tx_lon, rx_lat, rx_lon):
+    invl = geod.InverseLine(tx_lat, tx_lon, rx_lat, rx_lon)
+    dist = invl.s13 * 1e-3
+    az   = invl.azi1
+    mid  = invl.Position(invl.s13 / 2, Geodesic.STANDARD)
+    path_pts = [invl.Position(s, Geodesic.STANDARD)
+                for s in np.linspace(0, invl.s13, 100)]
+    path_lats = [p['lat2'] for p in path_pts]
+    path_lons = [p['lon2'] for p in path_pts]
+    return dict(invl=invl, dist=dist, az=az,
+                lat_mid=mid['lat2'], lon_mid=mid['lon2'],
+                path_lats=path_lats, path_lons=path_lons)
 
-# CHU lists
-all_invl_CHU = []
-all_dist_CHU = []
-all_az_CHU = []
-all_lat_mid_CHU = []
-all_lon_mid_CHU = []
-
-for i in range(len(callsign)):
-    psws_call = callsign[i]                                     
-    psws_lat = lat[i]
-    psws_lon = lon[i]
-
-    #calculate distance and azimuth for WWV
-    invl_WWV = geod.InverseLine(lat_WWV, lon_WWV, psws_lat, psws_lon)         
-    dist_WWV = invl_WWV.s13*1e-3  # Distance in km
-    az_WWV = invl_WWV.azi1
-    tmp_WWV = invl_WWV.Position(invl_WWV.s13/2, Geodesic.STANDARD)
-    lat_mid_WWV = tmp_WWV['lat2']
-    lon_mid_WWV = tmp_WWV['lon2']
-
-     # Calculate for CHU
-    invl_CHU = geod.InverseLine(lat_CHU, lon_CHU, psws_lat, psws_lon)         
-    dist_CHU = invl_CHU.s13*1e-3  # Distance in km
-    az_CHU = invl_CHU.azi1
-    tmp_CHU = invl_CHU.Position(invl_CHU.s13/2, Geodesic.STANDARD)
-    lat_mid_CHU = tmp_CHU['lat2']
-    lon_mid_CHU = tmp_CHU['lon2']
-
-    # Append to lists (only need one set of PSWS info)
-    all_psws.append(psws_call)
-    all_psws_lats.append(psws_lat)
-    all_psws_lons.append(psws_lon)
-   
-    # WWV data
-    all_invl_WWV.append(invl_WWV)
-    all_dist_WWV.append(dist_WWV)
-    all_az_WWV.append(az_WWV)
-    all_lat_mid_WWV.append(lat_mid_WWV)
-    all_lon_mid_WWV.append(lon_mid_WWV)
-
-    # CHU data
-    all_invl_CHU.append(invl_CHU)
-    all_dist_CHU.append(dist_CHU)
-    all_az_CHU.append(az_CHU)
-    all_lat_mid_CHU.append(lat_mid_CHU)
-    all_lon_mid_CHU.append(lon_mid_CHU)
-# Messy code end ========================================================
+stations = []
+for call, rx_lat, rx_lon in zip(callsign, lat, lon):
+    entry = {'call': call, 'lat': rx_lat, 'lon': rx_lon}
+    for tx_name, tx in transmitters.items():
+        entry[tx_name] = compute_geodesic(tx['lat'], tx['lon'], rx_lat, rx_lon)
+    stations.append(entry)
 
 # Print summary table
-print("\n" + "="*100)
-print(f"{'Station':<10} {'WWV Dist (km)':<15} {'WWV Midpoint':<25} {'CHU Dist (km)':<15} {'CHU Midpoint':<25}")
-print("="*100)
+print("\n" + "="*105)
+print(f"{'Station':<10} {'WWV Dist (km)':<15} {'WWV Midpoint':<28} {'CHU Dist (km)':<15} {'CHU Midpoint':<28}")
+print("="*105)
 
-for i in range(len(all_psws)):
-    wwv_mid = f"({all_lat_mid_WWV[i]:.2f}, {all_lon_mid_WWV[i]:.2f})"
-    chu_mid = f"({all_lat_mid_CHU[i]:.2f}, {all_lon_mid_CHU[i]:.2f})"
-    print(f"{all_psws[i]:<10} {all_dist_WWV[i]:<15.2f} {wwv_mid:<25} {all_dist_CHU[i]:<15.2f} {chu_mid:<25}")
-
-print("="*100 + "\n")
+for s in stations:
+    wwv_mid = f"({s['WWV']['lat_mid']:.2f}, {s['WWV']['lon_mid']:.2f})"
+    chu_mid = f"({s['CHU']['lat_mid']:.2f}, {s['CHU']['lon_mid']:.2f})"
+    print(f"{s['call']:<10} {s['WWV']['dist']:<15.2f} {wwv_mid:<28} {s['CHU']['dist']:<15.2f} {chu_mid:<28}")
+print("="*105 + "\n")
 
 ## World
 #xlim = (-180, 180)
@@ -111,63 +73,62 @@ ylim    = (20,55)
 fig = plt.figure(figsize=(15,8))
 ax  = fig.add_subplot(111, projection=ccrs.PlateCarree())
 
-# Add markers for transmitter, receiver, and midpoint
-ax.scatter(lon_WWV, lat_WWV, marker='*', s=500, label=call_WWV, color='yellow')
-ax.scatter(lon_CHU, lat_CHU, marker='*', s=500, label=call_CHU, color='lime')
-
-range_step = 1
-
-# Plot PSWS (modified section)
-for i in range(len(all_psws)):
-    if i == 0:
-        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250, color='red', label='W2NAF')
-    else:
-        ax.scatter(all_psws_lons[i], all_psws_lats[i], marker='^', s=250)  # No label for subsequent stations
-
-# Plot WWV paths and midpoints
-for i in range(len(all_psws)):  
-    if i == 0:
-        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, color='black')
-    else:
-        ax.scatter(all_lon_mid_WWV[i], all_lat_mid_WWV[i], s=250, color='black')
-        
-    invl = all_invl_WWV[i]
-    ranges = np.linspace(0, invl.s13, 100)
-    glats = []  # <-- Also fixed typo: was 'lats'
-    glons = []
-    for s in ranges:
-        tmp = invl.Position(s, Geodesic.STANDARD)
-        glats.append(tmp['lat2'])
-        glons.append(tmp['lon2'])
-    
-    ax.plot(glons, glats, lw=3, color='black', transform=ccrs.PlateCarree())  # <-- Moved outside inner loop and added color
-
-# Plot CHU paths and midpoints
-for i in range(len(all_psws)):
-    if i == 0:
-        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='black')
-    else:
-        ax.scatter(all_lon_mid_CHU[i], all_lat_mid_CHU[i], s=150, color='black')
-        
-    invl = all_invl_CHU[i]
-    ranges = np.linspace(0, invl.s13, 100)
-    glats = []
-    glons = []
-    for s in ranges:
-        tmp = invl.Position(s, Geodesic.STANDARD)
-        glats.append(tmp['lat2'])
-        glons.append(tmp['lon2'])
-        
-    ax.plot(glons, glats, lw=3, color='black', transform=ccrs.PlateCarree())
-
-# Finalize Figure
 ax.add_feature(cartopy.feature.COASTLINE)
 ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
-ax.set_title('')
-ax.gridlines(draw_labels=True)
-ax.legend(loc='lower right',prop={'size':'x-small','weight':'normal'},framealpha=1)
+#ax.gridlines(draw_labels=True)
+ax.gridlines(draw_labels=True, x_inline=False, y_inline=False,
+             xlabel_style={'size': 16, 'weight': 'bold'}, ylabel_style={'size': 16, 'weight': 'bold'})
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
+
+# Transmitters
+for tx_name, tx in transmitters.items():
+    ax.scatter(tx['lon'], tx['lat'], marker='*', s=500,
+               color=tx['color'], label=tx_name, zorder=5,
+               transform=ccrs.PlateCarree())
+    # Transmitter name label
+    ax.text(tx['lon'] + 0.5, tx['lat'] + 0.5, tx_name,
+            fontsize=10, fontweight='bold', transform=ccrs.PlateCarree(),
+            ha='left', va='bottom')
+
+# Paths, midpoints, and receivers
+path_labeled = {tx: False for tx in transmitters}
+mid_labeled  = {tx: False for tx in transmitters}
+rx_labeled   = False
+
+for s in stations:
+    # Receiver marker
+    rx_label = s['call'] if not rx_labeled else None
+    ax.scatter(s['lon'], s['lat'], marker='^', s=250,
+               color='red', label=rx_label, zorder=5,
+               transform=ccrs.PlateCarree())
+    rx_labeled = True
+
+    # Station name label
+    ax.text(s['lon'] + 0.5, s['lat'] + 0.5, s['call'],
+            fontsize=10, weight='bold', transform=ccrs.PlateCarree(),
+            ha='left', va='bottom')
+
+    for tx_name in transmitters:
+        g = s[tx_name]
+        color = path_colors[tx_name]
+
+        # Geodesic path
+        path_label = f'{tx_name} path' if not path_labeled[tx_name] else None
+        ax.plot(g['path_lons'], g['path_lats'], lw=2,
+                color=color, alpha=0.7, label=path_label,
+                transform=ccrs.PlateCarree())
+        path_labeled[tx_name] = True
+
+        # Midpoint
+        mid_label = f'{tx_name} midpoint' if not mid_labeled[tx_name] else None
+        ax.scatter(g['lon_mid'], g['lat_mid'], s=80, color=color,
+                   marker='o', edgecolors='black', linewidths=0.5,
+                   label=mid_label, zorder=4, transform=ccrs.PlateCarree())
+        mid_labeled[tx_name] = True
+
+#ax.set_title('PSWS Receiver Stations — WWV & CHU Propagation Paths', fontsize = 20, weight='bold')
+#ax.legend(loc='lower right', prop={'size': 'x-small'}, framealpha=1)
 
 
 plt.tight_layout()
