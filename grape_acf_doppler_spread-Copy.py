@@ -140,6 +140,8 @@ with open(csv_filename, 'w', encoding='UTF8',) as out_file:     # open a csv fil
   time[j]=round(((j)/(60*(60/time_window)))+hours_offset,5)                # time in hours, rounded for csv file
   writer.writerow([time[j],freq[j],spread[j],dB_level[j]])
 
+# =====================================================================================================================
+
 ###########################################
 # Plots of Doppler, Spread and Level
 ###########################################
@@ -163,26 +165,30 @@ def apply_xaxis_format(ax):
     ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])
 
 # --- SSC marker ---
+'''
 SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
 def utc_to_decimal_hours(t):
     return t.hour + t.minute/60 + t.second/3600
 SSC_decimal = utc_to_decimal_hours(SSC)
 ssc_label = f'SSC {SSC.strftime("%H:%M")} UTC'
+'''
 
 # --- Main Phase Marker ---
+'''
 #main_phase_start = datetime.strptime("17:10:00", "%H:%M:%S").time()
 main_phase_end = datetime.strptime("2:15:00", "%H:%M:%S").time()
 def utc_to_decimal_hours(t):
     return t.hour + t.minute/60 + t.second/3600
 main_phase_decimal = utc_to_decimal_hours(main_phase_end)
 main_phase_label = f'Main Phase End {main_phase_end.strftime("%H:%M")} UTC'
+'''
 
 # --- Plot 1: Doppler only ---
 plt.figure()
 ax = plt.gca()
 apply_xaxis_format(ax)
 plt.plot(time[0:length], freq[0:length], '.', color="black", label='Doppler frequency (Hz)')
-plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+#plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 plt.ylim(-4, 4)
@@ -198,7 +204,7 @@ plt.figure()
 ax = plt.gca()
 apply_xaxis_format(ax)
 plt.plot(time[0:length], dB_level[0:length], '.', color="black", label='Signal level (dB)')
-plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+#plt.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 plt.ylabel("Signal+Noise level (dB)")
@@ -214,7 +220,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
 # Top panel: Doppler
 ax1.plot(time[0:length], freq[0:length], '.', color="black", label='Doppler frequency (Hz)')
 #ax1.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label=ssc_label)
-ax1.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+#ax1.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 ax1.set_ylim(-4, 4)
 ax1.set_ylabel("Doppler shift (Hz)")
 ax1.legend(loc='best', fontsize=8)
@@ -222,7 +228,7 @@ ax1.legend(loc='best', fontsize=8)
 # Bottom panel: Signal Level
 ax2.plot(time[0:length], dB_level[0:length], '.', color="black", label='Signal level (dB)')
 #ax2.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label=ssc_label)
-ax2.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
+#ax2.axvline(x=main_phase_decimal, color='blue', linestyle='--', linewidth=1, label=main_phase_label)
 ax2.set_ylabel("Signal+Noise level (dB)")
 ax2.legend(loc='best', fontsize=8)
 

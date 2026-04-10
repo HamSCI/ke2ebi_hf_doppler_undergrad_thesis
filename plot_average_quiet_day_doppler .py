@@ -52,7 +52,7 @@ legend_elements = [
     Line2D([0], [0], color='red',   linewidth=1, label='STDEV'),
     Line2D([0], [0], color='blue',  linewidth=1, label='STDEV'),
 ]
-'''
+
 plt.scatter(timestamp, avg_dop, color='black', s=1.5, label='Average')
 plt.scatter(timestamp, lower_error, color='red', s=0.25, label='STDEV')
 plt.scatter(timestamp, upper_error, color='blue', s=0.25, label='STDEV')
@@ -60,7 +60,7 @@ plt.title('May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold')
 #plt.suptitle('W2NAF at 15.0 MHz', fontsize=12)
 plt.xlabel('Time (UTC)')
 plt.ylabel('Doppler shift (Hz)')
-plt.ylim(-5,5)
+#plt.ylim(-5,5)
 plt.gcf().set_size_inches(8, 3, forward=True)
 
 ax = plt.gca()
@@ -73,10 +73,10 @@ plt.legend(handles=legend_elements)
 plt.tight_layout()
 plt.savefig("W2NAF_May_2024_15MHz_quiet_time_avg.png", dpi=600)
 plt.show()
-'''
+
 
 # Plot a portion of the spectrogram ==============================================================================================================================================
-
+'''
 # Input time window
 start_time_utc = datetime.time(8,0,0)         # Edit inputs here
 end_time_utc   = datetime.time(13,0,0)    
@@ -110,7 +110,7 @@ min_idx  = np.argmin(doppler_window)
 min_time = time_window[min_idx]
 min_val  = doppler_window[min_idx]
 
-'''
+
 # Find max positive STDEV
 max_stdev_idx  = np.argmax(pos_stdev_window)
 max_stdev_time = pos_stdev_window[max_stdev_idx]
@@ -119,7 +119,7 @@ max_stdev_val  = pos_stdev_window[max_stdev_idx]
 min_stdev_idx  = np.argmin(neg_stdev_window)
 min_stdev_time = time_window[min_stdev_idx]
 min_stdev_val  = neg_stdev_window[min_stdev_idx]
-'''
+
 
 hours_max   = int(max_time)
 minutes_max = int((max_time % 1) * 60)
@@ -138,3 +138,5 @@ plt.ylabel('Doppler shift (Hz)')
 #plt.gcf().set_size_inches(8, 3, forward=True)
 plt.savefig("recent.png", dpi=600)
 plt.show()
+
+'''
