@@ -27,12 +27,16 @@ mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
+mpl.rcParams['axes.labelsize'] = 30
+mpl.rcParams['xtick.labelsize'] = 20
+mpl.rcParams['ytick.labelsize'] = 20
+
 data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,20)
-eDate       = datetime.datetime(2024,5,21)
-num_days    = 1
+sDate       = datetime.datetime(2024,5,10)
+eDate       = datetime.datetime(2024,5,14)
+num_days    = 5
 lat         =  41.335116 # W2NAF
 lon         =  -75.600692 # W2NAF
 frequencies = [15.0]
@@ -109,13 +113,16 @@ if __name__ == '__main__':
             ax.set_xlabel('')
             xtkls = ['']*len(xticks)
         else:
-            ax.set_xlabel('UTC')
+            ax.set_xlabel('UTC', size=30)
             xtkls   = []
             for xtk in xticks:
                 dt      = mpl.dates.num2date(xtk)
-                xtkl    = dt.strftime('%H:%M')
+                if dt.hour == 0 and dt.minute == 0:
+                    xtkl = dt.strftime('%d %b\n%Y')
+                else:
+                    xtkl = dt.strftime('%H:%M')
                 xtkls.append(xtkl)
-        ax.set_xticklabels(xtkls)
+    ax.set_xticklabels(xtkls)
 
     sdct    = station_dct.get(station,{})
     stxt = '{!s} ({!s})'.format(station.upper(),instrument.upper())
