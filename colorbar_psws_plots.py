@@ -1,3 +1,5 @@
+#colorbar_psws_plots
+
 #!/bin/env python
 # This scripts contains edits from original plotting code
 #  1) Defined inputs outside of main "if" indent
@@ -19,19 +21,26 @@ import grapeDRF
 letters = 'abcdefghijklmnopqrtuvwxyz'
 
 mpl.rcParams['font.size']       = 12
-mpl.rcParams['font.weight']     = 'bold'
+mpl.rcParams['font.weight']     = 'normal'
 mpl.rcParams['axes.grid']       = True
-mpl.rcParams['axes.titlesize']  = 30
+mpl.rcParams['axes.titlesize']  = 45
 mpl.rcParams['grid.linestyle']  = ':'
 mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
+mpl.rcParams['xtick.labelsize'] = 30   # x-axis tick labels
+mpl.rcParams['ytick.labelsize'] = 30   # y-axis tick labels
+mpl.rcParams['axes.labelsize']  = 40   # x and y axis titles (e.g. 'UTC')
+#mpl.rcParams['axes.titlepad']   = 10   # space between axes title and the axes
+#mpl.rcParams['xtick.major.pad'] = 5   # space between x tick marks and tick labels
+#mpl.rcParams['ytick.major.pad'] = 5   # space between y tick marks and tick labels
+
 data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,8)
-eDate       = datetime.datetime(2024,5,9)
+sDate       = datetime.datetime(2024,5,10)
+eDate       = datetime.datetime(2024,5,11)
 num_days    = 1
 lat         =  41.335116 # W2NAF
 lon         =  -75.600692 # W2NAF
@@ -103,13 +112,18 @@ if __name__ == '__main__':
     # Finalize Figure ######################
     for ax_inx,ax in enumerate(axs):
         ax.set_xlim(sDate,eDate)
+        ax.set_ylabel('')
+        for twin_ax in ax.get_shared_x_axes().get_siblings(ax):
+            if twin_ax is not ax:
+                twin_ax.set_ylabel('')
         xticks  = ax.get_xticks()
         ax.set_xticks(xticks)
         if ax_inx != len(axs)-1:
             ax.set_xlabel('')
             xtkls = ['']*len(xticks)
         else:
-            ax.set_xlabel('UTC')
+            ax.set_xlabel('UTC', labelpad=15)
+            ax.tick_params(axis='x', pad=15)  # increase to move timestamps down
             xtkls   = []
             for xtk in xticks:
                 dt      = mpl.dates.num2date(xtk)
@@ -128,9 +142,15 @@ if __name__ == '__main__':
         txt.append(sDate.strftime('%d %b %Y'))
     else:
         txt.append('{} - {}'.format(sDate.strftime('%d %b %Y'), eDate.strftime('%d %b %Y')))
-    fontdict    = {'size':42,'weight':'bold'}
+    fontdict    = {'size':50,'weight':'bold'}  #title size?
     fig.text(0.5,1.,'\n'.join(txt),fontdict=fontdict,ha='center',va='bottom')
 
-    fig.tight_layout()
+    # Single shared y-labels                                        # <-- add
+    fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)                # <-- add
+    fig.text(0.95, 0.5, 'Solar Elevation Angle',                # <-- add
+             fontsize=40, ha='left', va='center', rotation=270,     # <-- add
+             transform=fig.transFigure)                             # <-- add
+
+    fig.tight_layout(rect=[0.05, 0, 0.95, 1])                      # <-- modified
     fig.savefig(png_fpath,bbox_inches='tight')
     print(png_fpath)
