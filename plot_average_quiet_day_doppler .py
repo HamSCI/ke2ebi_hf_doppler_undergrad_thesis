@@ -49,17 +49,17 @@ def format_time(x, pos=None):
 # Create custom legend handles
 legend_elements = [
     Line2D([0], [0], color='black', linewidth=1, label='Average'),
-    Line2D([0], [0], color='red',   linewidth=1, label='STDEV'),
-    Line2D([0], [0], color='blue',  linewidth=1, label='STDEV'),
+    Line2D([0], [0], color='red',   linewidth=1, label='-STDEV'),
+    Line2D([0], [0], color='blue',  linewidth=1, label='+STDEV'),
 ]
 
 plt.scatter(timestamp, avg_dop, color='black', s=1.5, label='Average')
-plt.scatter(timestamp, lower_error, color='red', s=0.25, label='STDEV')
-plt.scatter(timestamp, upper_error, color='blue', s=0.25, label='STDEV')
-plt.title('May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold')
+plt.scatter(timestamp, lower_error, color='red', s=0.25, label='-STDEV')
+plt.scatter(timestamp, upper_error, color='blue', s=0.25, label='+STDEV')
+plt.title('May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold', size=18)
 #plt.suptitle('W2NAF at 15.0 MHz', fontsize=12)
-plt.xlabel('Time (UTC)')
-plt.ylabel('Doppler shift (Hz)')
+plt.xlabel('Time (UTC)', size=14)
+plt.ylabel('Doppler shift (Hz)', size=14)
 #plt.ylim(-5,5)
 plt.gcf().set_size_inches(8, 3, forward=True)
 
@@ -68,6 +68,7 @@ ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
 # Set x-axis range and ticks
 ax.set_xlim(0, 23 + 59/60)
 ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])  # last tick = 23:59
+ax.tick_params(axis='both', labelsize=12)  # Set whatever size you want
 
 plt.legend(handles=legend_elements)
 plt.tight_layout()
@@ -76,7 +77,7 @@ plt.show()
 
 
 # Plot a portion of the spectrogram ==============================================================================================================================================
-'''
+
 # Input time window
 start_time_utc = datetime.time(8,0,0)         # Edit inputs here
 end_time_utc   = datetime.time(13,0,0)    
@@ -101,7 +102,7 @@ for i in range(len(timestamp)):
       doppler_window.append(dop_shift)
       upper_error_window.append(pos_stdev)
       lower_error_window.append(neg_stdev)
-
+'''
 # Find max & min Dop shift in that time window
 max_idx  = np.argmax(doppler_window)
 max_time = time_window[max_idx]
@@ -127,16 +128,23 @@ hours_min   = int(min_time)
 minutes_min = int((min_time % 1) * 60)
 print(f'Max Dop shift: {max_val:.2f} Hz at {hours_max:02d}:{minutes_max:02d} UTC')
 print(f'Min Dop shift: {min_val:.2f} Hz at {hours_min:02d}:{minutes_min:02d} UTC')
+'''
+# Create custom legend handles
+legend_elements = [
+    Line2D([0], [0], color='black', linewidth=1, label='Average'),
+    Line2D([0], [0], color='red',   linewidth=1, label='-STDEV'),
+    Line2D([0], [0], color='blue',  linewidth=1, label='+STDEV'),
+]
 
 plt.scatter(time_window, doppler_window, color='black', s=1.5, label='Average')
-plt.scatter(time_window, lower_error_window, color='red', s=1.0, label='STDEV')
-plt.scatter(time_window, upper_error_window, color='blue', s=1.0, label='STDEV')
+plt.scatter(time_window, lower_error_window, color='red', s=1.0, label='-STDEV')
+plt.scatter(time_window, upper_error_window, color='blue', s=1.0, label='+STDEV')
 #plt.ylim(-4,4)
-plt.title(f'May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold')
-plt.xlabel('Time (UTC)')
-plt.ylabel('Doppler shift (Hz)')
+plt.title(f'May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold', size=15)
+plt.xlabel('Time (UTC)', size=14)
+plt.ylabel('Doppler shift (Hz)', size=14)
+plt.legend(handles=legend_elements)
+ax.tick_params(axis='both', labelsize=13)  # Set whatever size you want
 #plt.gcf().set_size_inches(8, 3, forward=True)
 plt.savefig("recent.png", dpi=600)
 plt.show()
-
-'''
