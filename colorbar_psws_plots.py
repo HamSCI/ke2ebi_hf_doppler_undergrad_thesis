@@ -39,8 +39,8 @@ mpl.rcParams['axes.labelsize']  = 40   # x and y axis titles (e.g. 'UTC')
 data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,10)
-eDate       = datetime.datetime(2024,5,11)
+sDate       = datetime.datetime(2024,5,8)
+eDate       = datetime.datetime(2024,5,9)
 num_days    = 1
 lat         =  41.335116 # W2NAF
 lon         =  -75.600692 # W2NAF
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         txt.append('{} - {}'.format(sDate.strftime('%d %b %Y'), eDate.strftime('%d %b %Y')))
     fontdict    = {'size':50,'weight':'bold'}  #title size?
     fig.text(0.5,1.,'\n'.join(txt),fontdict=fontdict,ha='center',va='bottom')
-
+    '''
     # Single shared y-labels                                        # <-- add
     fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)                # <-- add
     fig.text(0.95, 0.5, 'Solar Elevation Angle',                # <-- add
@@ -153,4 +153,34 @@ if __name__ == '__main__':
 
     fig.tight_layout(rect=[0.05, 0, 0.95, 1])                      # <-- modified
     fig.savefig(png_fpath,bbox_inches='tight')
+    print(png_fpath)
+    '''
+
+    # Single shared y-labels
+    fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)
+    fig.tight_layout(rect=[0.05, 0, 0.88, 1])          # leave room for label + colorbar
+
+    # Shared colorbar on the right side
+    mappable = None
+    for ax in axs:
+        for child in ax.get_children():
+            if hasattr(child, 'get_array') and child.get_array() is not None:
+                mappable = child
+                break
+        if mappable is not None:
+            break
+
+    if mappable is not None:
+        # Solar Elevation label between plots and colorbar
+        fig.text(0.89, 0.5, 'Solar Elevation Angle',
+                 fontsize=40, ha='left', va='center', rotation=270,
+                 transform=fig.transFigure)
+
+        # Colorbar to the right of that label
+        cbar_ax = fig.add_axes([0.93, 0.05, 0.018, 0.88])
+        cbar    = fig.colorbar(mappable, cax=cbar_ax)
+        cbar.set_label('Relative Signal Strength (dB)', fontsize=40, labelpad=40, rotation=270)
+        cbar.ax.tick_params(labelsize=30)
+
+    fig.savefig(png_fpath, bbox_inches='tight')
     print(png_fpath)

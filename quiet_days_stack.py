@@ -29,9 +29,9 @@ mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
-mpl.rcParams['xtick.labelsize'] = 20
-mpl.rcParams['ytick.labelsize'] = 20
-mpl.rcParams['axes.labelsize']  = 20
+mpl.rcParams['xtick.labelsize'] = 30
+mpl.rcParams['ytick.labelsize'] = 30
+mpl.rcParams['axes.labelsize']  = 40
 
 data_source = 'w2naf_grape1'
 callsign    = data_source.split('_')[0]
@@ -146,10 +146,30 @@ if __name__ == '__main__':
 
     # --- Shared axis labels ---
     fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)
-    fig.text(0.95, 0.5, 'Solar Elevation Angle',
-             fontsize=40, ha='left', va='center', rotation=270,
-             transform=fig.transFigure)
+    fig.tight_layout(rect=[0.05, 0, 0.88, 1])
 
-    fig.tight_layout(rect=[0.05, 0, 0.95, 1])
+    # Shared colorbar on the right side
+    mappable = None
+    for ax, sDate, eDate in axs:
+        for child in ax.get_children():
+            if hasattr(child, 'get_array') and child.get_array() is not None:
+                mappable = child
+                break
+        if mappable is not None:
+            break
+
+    if mappable is not None:
+        # Solar Elevation label between plots and colorbar
+        fig.text(0.89, 0.5, 'Solar Elevation Angle',
+                 fontsize=40, ha='left', va='center', rotation=270,
+                 transform=fig.transFigure)
+
+        # Colorbar to the right of that label
+        cbar_ax = fig.add_axes([0.93, 0.05, 0.018, 0.88])
+        cbar    = fig.colorbar(mappable, cax=cbar_ax)
+        cbar.set_label('Relative Signal Strength (dB)', fontsize=40,
+                       labelpad=60, rotation=270)
+        cbar.ax.tick_params(labelsize=30)
+
     fig.savefig(png_fpath, bbox_inches='tight')
     print(png_fpath)

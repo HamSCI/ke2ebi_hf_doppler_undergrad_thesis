@@ -1,6 +1,4 @@
-# Gannon Storm stackplot
-
-# Quiet days stack
+# Improved Gannon Storm stackplot
 
 #!/bin/env python
 # This script contains edits from original plotting code
@@ -32,7 +30,7 @@ mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
 mpl.rcParams['xtick.labelsize'] = 30
-mpl.rcParams['ytick.labelsize'] = 30
+mpl.rcParams['ytick.labelsize'] = 26.5
 mpl.rcParams['axes.labelsize']  = 40
 
 data_source = 'w2naf_grape1'
@@ -48,7 +46,7 @@ date_pairs = [
     (datetime.datetime(2024, 5, 11), datetime.datetime(2024, 5, 12)),
     (datetime.datetime(2024, 5, 12), datetime.datetime(2024, 5, 13)),
     (datetime.datetime(2024, 5, 13), datetime.datetime(2024, 5, 14)),
-    (datetime.datetime(2024, 5, 14), datetime.datetime(2024, 5,  15)),
+    (datetime.datetime(2024, 5, 14), datetime.datetime(2024, 5, 15)),
 ]
 
 station_dct = {}
@@ -106,8 +104,8 @@ if __name__ == '__main__':
                 gDRF.plot_ax(cfreq, ax, **figd)
                 ax.set_title('({!s})'.format(letters[ax_inx - 1]),
                              loc='left', fontdict=letter_fdict)
-                ax.set_title('{!s} MHz Receiver — {}'.format(
-                    cfreq, sDate.strftime('%d %b %Y')))
+                # ~~~ CHANGE 1: date only, no frequency label ~~~
+                ax.set_title(sDate.strftime('%d %b %Y'))
 
     # --- Finalize axes ---
     for i, (ax, sDate, eDate) in enumerate(axs):
@@ -120,9 +118,10 @@ if __name__ == '__main__':
         xticks = ax.get_xticks()
         ax.set_xticks(xticks)
 
-        is_last_in_date_block = ((i + 1) % rows_per_date == 0)
+        is_very_last = (i == len(axs) - 1)
 
-        if is_last_in_date_block:
+        # ~~~ CHANGE 2: "UTC" label and tick labels only on the very last plot ~~~
+        if is_very_last:
             ax.set_xlabel('UTC', labelpad=15)
             ax.tick_params(axis='x', pad=15)
             xtkls = []
@@ -141,6 +140,9 @@ if __name__ == '__main__':
     txt = [stxt]
     if 'QTH' in sdct:
         txt.append(sdct['QTH'])
+    # ~~~ CHANGE 1 (cont.): add frequency to supertitle ~~~
+    freq_str = ', '.join('{!s} MHz'.format(f) for f in cfreqs)
+    txt.append('{} Receiver'.format(freq_str))
     fontdict = {'size': 50, 'weight': 'bold'}
     fig.text(0.5, 1., '\n'.join(txt), fontdict=fontdict, ha='center', va='bottom')
 
