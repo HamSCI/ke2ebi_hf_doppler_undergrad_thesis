@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # 5. Panel (a): SYM-H
     # ------------------------------------------------------------------ #
     ax_sym.plot(timestamp, SYM_H, color='black', linewidth=0.8)
-    ax_sym.set_ylabel('SYM-H (nT)', fontsize=25, fontweight='bold')
+    ax_sym.set_ylabel('SYM-H (nT)', fontsize=25, fontweight='bold', rotation=270)
     ax_sym.tick_params(axis='both', labelsize=20)
     ax_sym.set_title('(a)', loc='left', fontdict=letter_fdict)
     #ax_sym.set_title('SYM-H Index')
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         gDRF.plot_ax(cfreq, ax_spect, **figd)
         for twin_ax in ax_spect.get_shared_x_axes().get_siblings(ax_spect):
             if twin_ax is not ax_spect:
-                twin_ax.yaxis.label.set_rotation(270)
+                twin_ax.yaxis.label.set_rotation(90)
                 twin_ax.yaxis.label.set_ha('center')
                 twin_ax.yaxis.labelpad = 25
     ax_spect.set_title('(b)', loc='left', fontdict=letter_fdict)
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------ #
     ax_level.plot(dop_time, cont_level, color='#d62728', linewidth=0.7, alpha=0.9)
     ax_level.set_ylabel('Signal + Noise (dB)', fontsize=25, fontweight='bold')
-    ax_level.set_xlabel('Time (UTC)', fontsize=22, fontweight='bold')
+    ax_level.set_xlabel('Time (UTC)', fontsize=28, fontweight='bold')
     ax_level.tick_params(axis='both', labelsize=20)
     ax_level.set_title('(d)', loc='left', fontdict=letter_fdict)
 
@@ -160,22 +160,25 @@ if __name__ == '__main__':
     # 9. Phase markers + day boundaries on all panels
     # ------------------------------------------------------------------ #
     for ax in (ax_sym, ax_spect, ax_dop, ax_level):
-        ax.axvline(t_main_phase,     color='red',  linestyle='--', linewidth=1.5)
-        ax.axvline(t_recovery_phase, color='blue', linestyle='--', linewidth=1.5)
+        ax.axvline(t_main_phase,     color='red',  linestyle='--', linewidth=1.5, label="Start of main phase")
+        ax.axvline(t_recovery_phase, color='blue', linestyle='--', linewidth=1.5, label="Start of recovery phase")
         for bd in day_boundaries:
             ax.axvline(bd, color='gray', linewidth=0.8, linestyle='--', alpha=0.5)
+        ax_sym.legend(fontsize=20, loc='lower right')
 
     # Phase + day labels on SYM-H panel only
     ylim_sym = ax_sym.get_ylim()
+    '''
     ax_sym.text(t_main_phase     + datetime.timedelta(minutes=20), ylim_sym[0],
                 'Main phase',     color='red',  fontsize=14, va='bottom')
     ax_sym.text(t_recovery_phase + datetime.timedelta(minutes=20), ylim_sym[0],
                 'Recovery phase', color='blue', fontsize=14, va='bottom')
+    '''
 
     day_labels = [f'May {10 + i}' for i in range(5)]
     for i, bd in enumerate(day_boundaries):
         ax_sym.text(bd + datetime.timedelta(minutes=30), ylim_sym[1],
-                    day_labels[i], fontsize=16, color='gray', va='top')
+                    day_labels[i], fontsize=25, color='gray', va='top')
 
     # ------------------------------------------------------------------ #
     # 10. X-axis ticks — only show on bottom panel
@@ -183,17 +186,29 @@ if __name__ == '__main__':
     for ax in (ax_sym, ax_spect, ax_dop):
         plt.setp(ax.get_xticklabels(), visible=False)
         ax.set_xlabel('')
-
+    '''
     def xtick_fmt(x, pos):
         dt = mdates.num2date(x)
         if dt.hour == 0 and dt.minute == 0:
             return dt.strftime('%d %b\n%Y')
         return dt.strftime('%H:%M')
+    '''
 
-    ax_level.xaxis.set_major_locator(mdates.HourLocator(byhour=range(0, 24, 6)))
+    def xtick_fmt(x, pos):
+        dt = mdates.num2date(x)
+        if dt.hour == 0 and dt.minute == 0:
+            return dt.strftime('%d %b\n%Y')
+        elif dt.hour == 12:
+            return '12:00'
+        return ''
+
+    ax_level.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12]))
     ax_level.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(xtick_fmt))
+
+    #ax_level.xaxis.set_major_locator(mdates.HourLocator(byhour=range(0, 24, 6)))
+    #ax_level.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(xtick_fmt))
     ax_level.set_xlim(sDate, eDate)
-    ax_level.tick_params(axis='x', labelsize=14, pad=8)
+    ax_level.tick_params(axis='x', labelsize=25, pad=8)
 
     # ------------------------------------------------------------------ #
     # 11. Supertitle
@@ -223,8 +238,9 @@ if __name__ == '__main__':
         cbar_ax = fig.add_axes([0.95, 0.07, 0.018, 0.84])
         cbar    = fig.colorbar(mappable, cax=cbar_ax)
         cbar.set_label('Relative Signal Strength (dB)', fontsize=25,
-                       labelpad=60, rotation=270)
+                       labelpad=50, rotation=270)
         cbar.ax.tick_params(labelsize=20)
 
+    fig.align_ylabels([ax_sym, ax_spect, ax_dop, ax_level])
     fig.savefig(png_fpath, bbox_inches='tight')
     print(png_fpath)
