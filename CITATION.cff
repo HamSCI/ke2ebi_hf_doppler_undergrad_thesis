@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "HamSCI Personal Space Weather Station Observations of the Gannon Geomagnetic Storm"
+type: software
+authors:
+  - family-names: Potter
+    given-names: Rebecca
+    affiliation: "University of Scranton"
+    # orcid: "https://orcid.org/XXXX-XXXX-XXXX-XXXX"  # TODO: add if Rebecca has one
+  - family-names: Griffiths
+    given-names: Gwyn
+    orcid: "https://orcid.org/0000-0002-6228-7698"
+  - family-names: Frissell
+    given-names: Nathaniel A.
+    orcid: "https://orcid.org/0000-0002-8398-4222"
+    affiliation: "University of Scranton"
+version: "2026.05"
+date-released: "2026-05-21"
+license: GPL-3.0-or-later
+repository-code: "https://github.com/HamSCI/ke2ebi_hf_doppler_undergrad_thesis"
+keywords:
+  - amateur radio
+  - HF propagation
+  - ionosphere
+  - Doppler shift
+  - HamSCI
+  - PSWS
+  - Grape
+  - ray tracing

@@ -1,18 +1,20 @@
-astropy
-Cartopy
-digital_rf
-geographiclib
-ipdb
-maidenhead
-matplotlib
-pandas
-prophet
-python_dateutil
-pytz
-scipy
-maidenhead
+# Lower bounds chosen for Python 3.10+ compatibility (tested with 3.10.14, 3.10.16, 3.12.3).
+astropy>=5.3
+Cartopy>=0.21
+digital_rf>=2.6.7
+geographiclib>=2.0
+ipdb>=0.13
+maidenhead>=1.6
+matplotlib>=3.7
+pandas>=2.0
+prophet>=1.1
+python-dateutil>=2.8
+pytz>=2023.3
+scipy>=1.10
 configparser
-geographiclib
-netCDF4
-tqdm
-psycopg2
+netCDF4>=1.6
+tqdm>=4.65
+# Optional: only required for the DB-upload/overlay features in synthspec.py
+# and grape_fft_spectrogram.py. Set HAMSCI_DB_UPLOAD_PASSWORD /
+# HAMSCI_DB_READ_PASSWORD before running those paths.
+psycopg2-binary>=2.9

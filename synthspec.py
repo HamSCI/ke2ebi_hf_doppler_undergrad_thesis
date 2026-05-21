@@ -257,7 +257,12 @@ if db_flag == 'DB':
       try:
         # connect to the PostgreSQL database
         #print ("Trying to  connect")
-        conn = psycopg2.connect("dbname='hamsci' user='wdupload' host='localhost' password='Whisper2008'")
+        conn = psycopg2.connect(
+            dbname='hamsci',
+            user='wdupload',
+            host='localhost',
+            password=os.environ.get('HAMSCI_DB_UPLOAD_PASSWORD'),
+        )
         connected="Connected"
         #print ("Appear to have connected")
         cur = conn.cursor()

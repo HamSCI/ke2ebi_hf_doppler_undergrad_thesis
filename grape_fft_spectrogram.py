@@ -209,7 +209,12 @@ if db_flag == 'True':
   try:
         # connect to the PostgreSQL database on the localhost
         #print ("Trying to  connect")
-        conn = psycopg2.connect("dbname='hamsci' user='wdread' host='localhost' password='JTWSPR2008'")
+        conn = psycopg2.connect(
+            dbname='hamsci',
+            user='wdread',
+            host='localhost',
+            password=os.environ.get('HAMSCI_DB_READ_PASSWORD'),
+        )
         connected="Connected"
         #print ("Appear to have connected")
         cur = conn.cursor()

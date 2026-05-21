@@ -162,5 +162,6 @@ cython_debug/
 *.swp
 output*/
 data/
+.DS_Store
 
 settings.json

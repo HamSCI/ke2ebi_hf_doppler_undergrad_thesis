@@ -152,7 +152,7 @@ grapeDRF_doppler_model/
 ├── psws_spectrogram_with_colorbar.py
 │
 │   ── Multi-day summary scripts ──
-├── 15MHz_average_quiet_day_doppler .py
+├── 15MHz_average_quiet_day_doppler.py
 ├── 15MHz_multiday_summary.py
 ├── multi_day_colorbar.py
 ├── quiet_day_stack.py
@@ -698,7 +698,7 @@ These scripts analyse extracted Doppler data across multiple days and are primar
 
 | Script | Purpose |
 |--------|---------|
-| `15MHz_average_quiet_day_doppler .py` | Computes and plots an average quiet-day Doppler profile at 15 MHz |
+| `15MHz_average_quiet_day_doppler.py` | Computes and plots an average quiet-day Doppler profile at 15 MHz |
 | `15MHz_multiday_summary.py` | Multi-day summary plot at 15 MHz |
 | `quiet_day_stack.py` | Stack plot of quiet-day data |
 | `multi_day_colorbar.py` | Shared colorbar for multi-day plots |
@@ -814,7 +814,7 @@ data/psws_grapeDRF/
 
 Metadata fields include `center_frequencies`, `lat`, `long`, and callsign/grid information. All scripts derive the station callsign and coordinates from the metadata automatically.
 
-Bundled example data covers:
+Example workflows in this repository reference the following station recordings (not bundled — obtain from the HamSCI PSWS data portal):
 
 | Channel | Station | Event |
 |---------|---------|-------|

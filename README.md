@@ -1,14 +1,26 @@
-# Installation 
+# HamSCI Personal Space Weather Station Observations of the Gannon Geomagnetic Storm
+
+HF Doppler analysis tools accompanying Rebecca Potter's (KE2EBI) undergraduate thesis at the University of Scranton. The repository contains scripts for plotting and analyzing GRAPE / PSWS HF Doppler observations and for synthesizing Doppler spectrograms from ionospheric ray tracing.
+
+<!-- After Zenodo mints the DOI, replace the placeholder below:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+-->
+
+## How to cite
+
+If you use this software in your work, please cite the Zenodo archive (DOI to be assigned on release) and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
+
+# Installation
 This software has been tested on Ubuntu Linux and Mac OS systems.
 
 ### Download
-You need to clone the package from github.com and run the software in the grapeDRF_doppler_model sub-directory. 
+Clone the repository and run the software from the resulting directory.
 ```
 cd ~
-git clone https://github.com/g3zil/grapeDRF_doppler_model.git
-cd ~/grapeDRF_doppler_model
+git clone https://github.com/HamSCI/ke2ebi_hf_doppler_undergrad_thesis.git
+cd ~/ke2ebi_hf_doppler_undergrad_thesis
 ```
-Execute all further commands in the ~/grapeDRF_doppler_model directory.
+Execute all further commands in the ~/ke2ebi_hf_doppler_undergrad_thesis directory.
 Updates can be downloaded with:
 ```
 git pull
@@ -47,8 +59,8 @@ This will automatically create an `output/` directory and the desired plot in `o
 ![image](20240408.0000_20240409.0000_w2naf_WDgrape_20_15_10_5.png)
 
 # G3ZIL digital RF Doppler plotting and analysis
-One-day data files for the examples below are in directories ./data/psws_grapeDRF/ch0_* where * is a PSWS reporting station callsign.
-Current examples include: ch0_G4HZX, ch0_N8GA, ch0_W2NAF.
+The examples below assume one-day Grape DigitalRF data files in directories `./data/psws_grapeDRF/ch0_*` where `*` is a PSWS reporting station callsign. This archive does not bundle the raw data; obtain station recordings from the HamSCI PSWS data portal and place them under `data/psws_grapeDRF/` to reproduce the example commands.
+Example channel names referenced below: ch0_G4HZX, ch0_N8GA, ch0_W2NAF.
 Plots are output to ./output/plots/* where * is the callsign, and csv data files to ./output/csv/*
 
 ### Listing metadata
@@ -250,6 +262,12 @@ https://github.com/user-attachments/assets/95268232-11b4-41ee-9da1-0c760e2c7cab
 
 
 December 2025
+
+# License
+
+Copyright (C) 2024-2026 Rebecca Potter (KE2EBI), Gwyn Griffiths (G3ZIL), and Nathaniel A. Frissell (W2NAF).
+
+This software is released under the GNU General Public License v3.0 or later — see [LICENSE](LICENSE) for the full text.
 
 # Acknowledgements
 
