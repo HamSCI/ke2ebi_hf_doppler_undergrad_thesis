@@ -250,3 +250,9 @@ https://github.com/user-attachments/assets/95268232-11b4-41ee-9da1-0c760e2c7cab
 
 
 December 2025
+
+# Acknowledgements
+
+I am very grateful to my thesis advisor, Dr. Nathaniel Frissell, for providing resources, mentorship, and positive encouragement throughout this project. I am also grateful to my committee members Dr. Juan Serna and Dr. Declan Mulhall for their constructive feedback and support both in this project and my overall academic endeavors throughout my time at the University of Scranton. More thanks go to the collaborators whom I met with weekly to discuss my progress and received advice from throughout this academic year: Gwyn Griffiths, Dr. Kuldeep Pandey, Dr. Sarah Over, Dr. Mary Lou West, Gary Mitkin, Dr. Rob Suggs, and Dr. Jay Weitzen. Their expertise and readiness to share it played a strong role in this project’s success.
+
+We are grateful for the support of NSF Grants AGS-2045755, AGS-2432821, AGS-2432822, AGS-2432824, AGS-2432823, OPP-2332427, and NASA Grants 80NSSC23K1322, 80NSSC25K7026.
