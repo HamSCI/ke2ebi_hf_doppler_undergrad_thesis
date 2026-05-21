@@ -12,6 +12,8 @@ from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 import grapeDRF
 
+data         = os.path.join(os.getcwd(), 'data')
+
 letters = 'abcdefghijklmnopqrtuvwxyz'
 
 mpl.rcParams['font.size']       = 12
@@ -27,14 +29,14 @@ mpl.rcParams['xtick.labelsize'] = 30
 mpl.rcParams['ytick.labelsize'] = 20
 
 # --- Shared config ---
-data_source = 'w2naf_grape1'
+data_source = 'w2naf_rx888'                            # Input data directory ("callsign_instrument")
 callsign    = data_source.split('_')[0]
 instrument  = data_source.split('_')[1]
-sDate       = datetime.datetime(2024, 5, 10)
-eDate       = datetime.datetime(2024, 5, 15)
-lat         =  41.335116
-lon         =  -75.600692
-frequencies = [15.0]
+sDate       = datetime.datetime(2024, 5, 10)           # Input start date
+eDate       = datetime.datetime(2024, 5, 15)           # Input end date
+lat         =  41.335116                               # Input station latitude
+lon         =  -75.600692                              # Input station longitude
+frequencies = [15.0]                                   # Specify frequency you want to plot
 
 station_dct = {}
 sdct        = station_dct[callsign] = {}
@@ -55,8 +57,8 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------ #
     # 1. Load SYM-H
     # ------------------------------------------------------------------ #
-    sym_filename = '15MHz_GannonStorm_obs.csv'
-    sym_data     = np.genfromtxt(sym_filename, delimiter=',', skip_header=2, dtype=str)
+    sym_filename = 'SYMH_GannonStorm.csv'
+    sym_data     = np.genfromtxt(os.path.join(data, sym_filename), delimiter=',', skip_header=2, dtype=str)
     timestamp    = np.array([datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ')
                              for t in sym_data[:, 0]])
     SYM_H        = sym_data[:, 1].astype(float)
@@ -64,12 +66,13 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------ #
     # 2. Load Doppler / S+N CSVs and build datetime arrays
     # ------------------------------------------------------------------ #
+    csv_dir   = os.path.join(os.getcwd(), 'output', 'csv', 'W2NAF')
     day_files = [
-        'ACF_FWL_data__15.0MHz_2024-05-10_0-24.csv',
-        'ACF_FWL_data__15.0MHz_2024-05-11_0-24.csv',
-        'ACF_FWL_data__15.0MHz_2024-05-12_0-24.csv',
-        'ACF_FWL_data__15.0MHz_2024-05-13_0-24.csv',
-        'ACF_FWL_data__15.0MHz_2024-05-14_0-24.csv',
+        os.path.join(csv_dir, 'ACF_FWL_data__15.0MHz_2024-05-10_0-24.csv'),
+        os.path.join(csv_dir, 'ACF_FWL_data__15.0MHz_2024-05-11_0-24.csv'),
+        os.path.join(csv_dir, 'ACF_FWL_data__15.0MHz_2024-05-12_0-24.csv'),
+        os.path.join(csv_dir, 'ACF_FWL_data__15.0MHz_2024-05-13_0-24.csv'),
+        os.path.join(csv_dir, 'ACF_FWL_data__15.0MHz_2024-05-14_0-24.csv'),
     ]
     day_origins = [datetime.datetime(2024, 5, 10 + i) for i in range(5)]
 
@@ -168,13 +171,6 @@ if __name__ == '__main__':
 
     # Phase + day labels on SYM-H panel only
     ylim_sym = ax_sym.get_ylim()
-    '''
-    ax_sym.text(t_main_phase     + datetime.timedelta(minutes=20), ylim_sym[0],
-                'Main phase',     color='red',  fontsize=14, va='bottom')
-    ax_sym.text(t_recovery_phase + datetime.timedelta(minutes=20), ylim_sym[0],
-                'Recovery phase', color='blue', fontsize=14, va='bottom')
-    '''
-
     day_labels = [f'May {10 + i}' for i in range(5)]
     for i, bd in enumerate(day_boundaries):
         ax_sym.text(bd + datetime.timedelta(minutes=30), ylim_sym[1],
@@ -186,13 +182,6 @@ if __name__ == '__main__':
     for ax in (ax_sym, ax_spect, ax_dop):
         plt.setp(ax.get_xticklabels(), visible=False)
         ax.set_xlabel('')
-    '''
-    def xtick_fmt(x, pos):
-        dt = mdates.num2date(x)
-        if dt.hour == 0 and dt.minute == 0:
-            return dt.strftime('%d %b\n%Y')
-        return dt.strftime('%H:%M')
-    '''
 
     def xtick_fmt(x, pos):
         dt = mdates.num2date(x)
@@ -204,9 +193,6 @@ if __name__ == '__main__':
 
     ax_level.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12]))
     ax_level.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(xtick_fmt))
-
-    #ax_level.xaxis.set_major_locator(mdates.HourLocator(byhour=range(0, 24, 6)))
-    #ax_level.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(xtick_fmt))
     ax_level.set_xlim(sDate, eDate)
     ax_level.tick_params(axis='x', labelsize=25, pad=8)
 

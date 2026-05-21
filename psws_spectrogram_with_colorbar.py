@@ -1,7 +1,6 @@
+# Plot PSWS spectrograms with color bars
+
 #!/bin/env python
-# This scripts contains edits from original plotting code
-#  1) Defined inputs outside of main "if" indent
-#  2)  
 
 import os
 import datetime
@@ -19,27 +18,28 @@ import grapeDRF
 letters = 'abcdefghijklmnopqrtuvwxyz'
 
 mpl.rcParams['font.size']       = 12
-mpl.rcParams['font.weight']     = 'bold'
+mpl.rcParams['font.weight']     = 'normal'
 mpl.rcParams['axes.grid']       = True
-mpl.rcParams['axes.titlesize']  = 30
+mpl.rcParams['axes.titlesize']  = 45
 mpl.rcParams['grid.linestyle']  = ':'
 mpl.rcParams['figure.figsize']  = np.array([15, 8])
 mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
-mpl.rcParams['axes.labelsize'] = 30
-mpl.rcParams['xtick.labelsize'] = 20
-mpl.rcParams['ytick.labelsize'] = 20
+mpl.rcParams['xtick.labelsize'] = 30   # x-axis tick labels
+mpl.rcParams['ytick.labelsize'] = 30   # y-axis tick labels
+mpl.rcParams['axes.labelsize']  = 40   # x and y axis titles (e.g. 'UTC')
 
-data_source = 'w2naf_rx888'                  # Data directory {callsign}_{instrument}
+
+data_source = 'w2naf_rx888'                     # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
-sDate       = datetime.datetime(2024,5,10)
-eDate       = datetime.datetime(2024,5,11)
-num_days    = 5
-lat         =  41.335116 # W2NAF
-lon         =  -75.600692 # W2NAF
-frequencies = [5.0, 10.0, 15.0]
+sDate       = datetime.datetime(2024,5,8)       # Specify start date
+eDate       = datetime.datetime(2024,5,9)       # Specify end date
+num_days    = 1                                 # Specify number of days to be plotted
+lat         =  41.335116 # W2NAF                # latitude coordinate
+lon         =  -75.600692 # W2NAF               # longitude coordinate
+frequencies = [5.0,10.0,15.0]                   # frequencies to be plotted
 
 
 station_dct = {}
@@ -49,7 +49,6 @@ if __name__ == '__main__':
     sDate_str = sDate.strftime('%Y%m%d')
     eDate_str = eDate.strftime('%Y%m%d')
     output_dir = os.path.join('output', data_source, f'{data_source}_{sDate_str}-{eDate_str}')
-    #output_dir = os.path.join('output',f'{callsign}_{instrument}_{sDate}_{eDate}')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
@@ -64,8 +63,6 @@ if __name__ == '__main__':
     cfreqs          = frequencies
     plot_list   = []
     plot_list.append('WDgrape')
-    # plot_list.append('VLF')
-#    plot_list.append('gmag')
 
     str_sDate   = sDate.strftime('%Y%m%d.%H%M')
     str_eDate   = eDate.strftime('%Y%m%d.%H%M')
@@ -107,22 +104,24 @@ if __name__ == '__main__':
     # Finalize Figure ######################
     for ax_inx,ax in enumerate(axs):
         ax.set_xlim(sDate,eDate)
+        ax.set_ylabel('')
+        for twin_ax in ax.get_shared_x_axes().get_siblings(ax):
+            if twin_ax is not ax:
+                twin_ax.set_ylabel('')
         xticks  = ax.get_xticks()
         ax.set_xticks(xticks)
         if ax_inx != len(axs)-1:
             ax.set_xlabel('')
             xtkls = ['']*len(xticks)
         else:
-            ax.set_xlabel('UTC', size=30)
+            ax.set_xlabel('UTC', labelpad=15)
+            ax.tick_params(axis='x', pad=15)  # increase to move timestamps down
             xtkls   = []
             for xtk in xticks:
                 dt      = mpl.dates.num2date(xtk)
-                if dt.hour == 0 and dt.minute == 0:
-                    xtkl = dt.strftime('%d %b\n%Y')
-                else:
-                    xtkl = dt.strftime('%H:%M')
+                xtkl    = dt.strftime('%H:%M')
                 xtkls.append(xtkl)
-    ax.set_xticklabels(xtkls)
+        ax.set_xticklabels(xtkls)
 
     sdct    = station_dct.get(station,{})
     stxt = '{!s} ({!s})'.format(station.upper(),instrument.upper())
@@ -135,13 +134,12 @@ if __name__ == '__main__':
         txt.append(sDate.strftime('%d %b %Y'))
     else:
         txt.append('{} - {}'.format(sDate.strftime('%d %b %Y'), eDate.strftime('%d %b %Y')))
-    fontdict    = {'size':42,'weight':'bold'}
+    fontdict    = {'size':50,'weight':'bold'}  #title size?
     fig.text(0.5,1.,'\n'.join(txt),fontdict=fontdict,ha='center',va='bottom')
 
-    fig.tight_layout()
-    # Shared y-label and layout
+    # Single shared y-labels
     fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)
-    fig.tight_layout(rect=[0.05, 0, 0.88, 1])
+    fig.tight_layout(rect=[0.05, 0, 0.88, 1])          # leave room for label + colorbar
 
     # Shared colorbar on the right side
     mappable = None
@@ -162,8 +160,7 @@ if __name__ == '__main__':
         # Colorbar to the right of that label
         cbar_ax = fig.add_axes([0.93, 0.05, 0.018, 0.88])
         cbar    = fig.colorbar(mappable, cax=cbar_ax)
-        cbar.set_label('Relative Signal Strength (dB)', fontsize=40,
-                       labelpad=60, rotation=270)
+        cbar.set_label('Relative Signal Strength (dB)', fontsize=40, labelpad=40, rotation=270)
         cbar.ax.tick_params(labelsize=30)
 
     fig.savefig(png_fpath, bbox_inches='tight')

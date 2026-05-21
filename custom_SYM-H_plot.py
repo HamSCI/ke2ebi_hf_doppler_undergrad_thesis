@@ -1,12 +1,13 @@
 # Custom SYM-H plot
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-filename = 'OMNI_HRO_1MIN_2496091.csv'
 
+filename = 'data/SYMH_GannonStorm.csv'
 data = np.genfromtxt(filename, delimiter=',', skip_header=69, dtype=str)
 
 time = np.array([datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ') for t in data[:, 0]])
@@ -32,5 +33,5 @@ ax.set_xlabel('Time (UTC)', size=25.0, fontweight='bold')
 ax.set_ylabel('SYM-H (nT)', size=25.0, fontweight='bold')
 ax.set_title('SYM-H Index', size=30.0, fontweight='bold')
 plt.tight_layout()
-plt.savefig("Custom_SYM-H_Plot.png", dpi=600)
+plt.savefig("output/Custom_SYM-H_Plot.png", dpi=600)
 plt.show()

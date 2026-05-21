@@ -1,9 +1,6 @@
-# Improved Gannon Storm stackplot
+# Creates a stackplot of all the days of the Gannon Storm
 
 #!/bin/env python
-# This script contains edits from original plotting code
-#  1) Defined inputs outside of main "if" indent
-#  2) Plot seven different dates stacked on top of each other
 
 import os
 import datetime
@@ -12,10 +9,8 @@ logger  = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
-
 import matplotlib as mpl
 from matplotlib import pyplot as plt
-
 import grapeDRF
 
 letters = 'abcdefghijklmnopqrtuvwxyz'
@@ -33,7 +28,7 @@ mpl.rcParams['xtick.labelsize'] = 30
 mpl.rcParams['ytick.labelsize'] = 26.5
 mpl.rcParams['axes.labelsize']  = 40
 
-data_source = 'w2naf_grape1'
+data_source = 'w2naf_rx888'
 callsign    = data_source.split('_')[0]
 instrument  = data_source.split('_')[1]
 lat         =  41.335116  # W2NAF
