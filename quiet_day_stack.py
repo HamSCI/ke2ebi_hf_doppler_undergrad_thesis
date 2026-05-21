@@ -1,9 +1,7 @@
-#May10_and_8_stacked
-
 #!/bin/env python
-# This scripts contains edits from original plotting code
+# This script contains edits from original plotting code
 #  1) Defined inputs outside of main "if" indent
-#  2) Plot two different dates stacked on top of each other
+#  2) Plot seven different dates stacked on top of each other
 
 import os
 import datetime
@@ -30,20 +28,25 @@ mpl.rcParams['axes.xmargin']    = 0
 mpl.rcParams['legend.fontsize'] = 'xx-large'
 
 mpl.rcParams['xtick.labelsize'] = 30
-mpl.rcParams['ytick.labelsize'] = 30
+mpl.rcParams['ytick.labelsize'] = 27.0
 mpl.rcParams['axes.labelsize']  = 40
 
-data_source = 'w2naf_grape1'
+data_source = 'w2naf_rx888'
 callsign    = data_source.split('_')[0]
 instrument  = data_source.split('_')[1]
 lat         =  41.335116  # W2NAF
 lon         =  -75.600692 # W2NAF
 frequencies = [15.0]
 
-# --- Two dates to stack ---
+# --- Seven dates to stack ---
 date_pairs = [
-    (datetime.datetime(2024, 5, 10),  datetime.datetime(2024, 5, 11)),
     (datetime.datetime(2024, 5, 8), datetime.datetime(2024, 5, 9)),
+    (datetime.datetime(2024, 5, 9), datetime.datetime(2024, 5, 10)),
+    (datetime.datetime(2024, 5, 14), datetime.datetime(2024, 5, 15)),
+    (datetime.datetime(2024, 5, 20), datetime.datetime(2024, 5, 21)),
+    (datetime.datetime(2024, 5, 25), datetime.datetime(2024, 5,  26)),
+    (datetime.datetime(2024, 5, 28), datetime.datetime(2024, 5,  29)),
+    (datetime.datetime(2024, 5, 29), datetime.datetime(2024, 5, 30)),
 ]
 
 station_dct = {}
@@ -75,7 +78,7 @@ if __name__ == '__main__':
     png_fpath = os.path.join(output_dir, png_fname)
 
     # --- Layout: rows = dates × frequencies ---
-    rows_per_date = len(cfreqs)  # one row per frequency
+    rows_per_date = len(cfreqs)   # one row per frequency
     nrows   = len(date_pairs) * rows_per_date
     ncols   = 1
     ax_inx  = 0
@@ -101,8 +104,8 @@ if __name__ == '__main__':
                 gDRF.plot_ax(cfreq, ax, **figd)
                 ax.set_title('({!s})'.format(letters[ax_inx - 1]),
                              loc='left', fontdict=letter_fdict)
-                ax.set_title('{!s} MHz Receiver — {}'.format(
-                    cfreq, sDate.strftime('%d %b %Y')))
+                # ~~~ CHANGE 1: date only, no frequency label ~~~
+                ax.set_title(sDate.strftime('%B %d, %Y'))
 
     # --- Finalize axes ---
     for i, (ax, sDate, eDate) in enumerate(axs):
@@ -115,16 +118,16 @@ if __name__ == '__main__':
         xticks = ax.get_xticks()
         ax.set_xticks(xticks)
 
-        is_last = (i == len(axs) - 1)
-        # Also label x-axis on the last row of each date block
         is_last_in_date_block = ((i + 1) % rows_per_date == 0)
+        is_very_last = (i == len(axs) - 1)
 
-        if is_last_in_date_block:
+        # ~~~ CHANGE 2: "UTC" label and tick marks only on the very last plot ~~~
+        if is_very_last:
             ax.set_xlabel('UTC', labelpad=15)
             ax.tick_params(axis='x', pad=15)
             xtkls = []
             for xtk in xticks:
-                dt   = mpl.dates.num2date(xtk)
+                dt = mpl.dates.num2date(xtk)
                 xtkls.append(dt.strftime('%H:%M'))
         else:
             ax.set_xlabel('')
@@ -135,24 +138,15 @@ if __name__ == '__main__':
     # --- Figure title ---
     sdct = station_dct.get(station, {})
     stxt = '{!s} ({!s})'.format(station.upper(), instrument.upper())
-    date_strs = ' & '.join(sDate.strftime('%d %b %Y') for sDate, _ in date_pairs)
     txt = [stxt]
     if 'QTH' in sdct:
         txt.append(sdct['QTH'])
-    #txt.append(date_strs)
+    # ~~~ CHANGE 1 (cont.): add frequency to supertitle ~~~
+    freq_str = ', '.join('{!s} MHz'.format(f) for f in cfreqs)
+    txt.append('{} Receiver'.format(freq_str))
     fontdict = {'size': 50, 'weight': 'bold'}
     fig.text(0.5, 1., '\n'.join(txt), fontdict=fontdict, ha='center', va='bottom')
-    '''
-    # --- Shared axis labels ---
-    fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)
-    fig.text(0.95, 0.5, 'Solar Elevation Angle',
-             fontsize=40, ha='left', va='center', rotation=270,
-             transform=fig.transFigure)
 
-    fig.tight_layout(rect=[0.05, 0, 0.95, 1])
-    fig.savefig(png_fpath, bbox_inches='tight')
-    print(png_fpath)
-    '''
     # --- Shared axis labels ---
     fig.supylabel('Doppler Shift (Hz)', fontsize=40, x=0.065)
     fig.tight_layout(rect=[0.05, 0, 0.88, 1])

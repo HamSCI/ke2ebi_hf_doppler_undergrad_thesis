@@ -1,7 +1,4 @@
 #!/bin/env python
-# This scripts contains edits from original plotting code
-#  1) Defined inputs outside of main "if" indent
-#  2)  
 
 import os
 import datetime
@@ -31,7 +28,7 @@ mpl.rcParams['axes.labelsize']  = 28
 mpl.rcParams['xtick.labelsize'] = 25
 mpl.rcParams['ytick.labelsize'] = 20
 
-data_source = 'w2naf_grape1'                  # Data directory {callsign}_{instrument}
+data_source = 'w2naf_rx888'                  # Data directory {callsign}_{instrument}
 callsign    = data_source.split('_')[0]         # Extract callsign from directory name
 instrument  = data_source.split('_')[1]         # Extract instrument type from directory name
 sDate       = datetime.datetime(2024,5,10)

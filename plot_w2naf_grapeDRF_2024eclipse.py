@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     sDate       = datetime.datetime(2024,5,10)
     eDate       = datetime.datetime(2024,5,11)
-    station     = 'w2naf_'
+    station     = 'w2naf '
     lat         =  41.335116 # W2NAF
     lon         = -75.600692 # W2NAF
 

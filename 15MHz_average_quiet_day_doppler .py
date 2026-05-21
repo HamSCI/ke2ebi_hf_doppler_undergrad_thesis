@@ -8,7 +8,7 @@ import datetime
 
 # Load data from .csv ================================================================================================================================
 
-file_name = 'W2NAF_May_2024_quiet_days(15MHz).csv'
+file_name = 'data/W2NAF_May_2024_quiet_days(15MHz).csv'
 data = np.genfromtxt(file_name, delimiter=',', skip_header=5)
 
 timestamp   = data[:,0]
@@ -72,7 +72,7 @@ ax.tick_params(axis='both', labelsize=12)  # Set whatever size you want
 
 plt.legend(handles=legend_elements)
 plt.tight_layout()
-plt.savefig("W2NAF_May_2024_15MHz_quiet_time_avg.png", dpi=600)
+plt.savefig("./output/W2NAF_May_2024_15MHz_quiet_time_avg.png", dpi=600)
 plt.show()
 
 
@@ -129,6 +129,7 @@ minutes_min = int((min_time % 1) * 60)
 print(f'Max Dop shift: {max_val:.2f} Hz at {hours_max:02d}:{minutes_max:02d} UTC')
 print(f'Min Dop shift: {min_val:.2f} Hz at {hours_min:02d}:{minutes_min:02d} UTC')
 '''
+
 # Create custom legend handles
 legend_elements = [
     Line2D([0], [0], color='black', linewidth=1, label='Average'),
@@ -145,6 +146,5 @@ plt.xlabel('Time (UTC)', size=14)
 plt.ylabel('Doppler shift (Hz)', size=14)
 plt.legend(handles=legend_elements)
 ax.tick_params(axis='both', labelsize=13)  # Set whatever size you want
-#plt.gcf().set_size_inches(8, 3, forward=True)
-plt.savefig("recent.png", dpi=600)
+plt.savefig("output/15_MHz_quiet_time_avg_window.png", dpi=600)
 plt.show()

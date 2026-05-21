@@ -127,9 +127,6 @@ for s in stations:
                    label=mid_label, zorder=4, transform=ccrs.PlateCarree())
         mid_labeled[tx_name] = True
 
-#ax.set_title('PSWS Receiver Stations — WWV & CHU Propagation Paths', fontsize = 20, weight='bold')
-#ax.legend(loc='lower right', prop={'size': 'x-small'}, framealpha=1)
-
 
 plt.tight_layout()
 plt.savefig('./output/maps/psws_map.png', dpi=300, bbox_inches='tight')
