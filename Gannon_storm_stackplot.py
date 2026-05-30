@@ -48,6 +48,15 @@ station_dct = {}
 sdct        = station_dct[callsign] = {}
 
 if __name__ == '__main__':
+    import sys
+    # Optional CLI args: start date (YYYY-MM-DD) and number of consecutive days
+    # to stack. With no args the default list above (10-14 May 2024) is used.
+    if len(sys.argv) > 1:
+        start = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
+        ndays = int(sys.argv[2]) if len(sys.argv) > 2 else len(date_pairs)
+        date_pairs = [(start + datetime.timedelta(days=i),
+                       start + datetime.timedelta(days=i + 1)) for i in range(ndays)]
+
     # Use the overall span for the output filename
     sDate_all = date_pairs[0][0]
     eDate_all = date_pairs[-1][1]

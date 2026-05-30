@@ -10,6 +10,11 @@ HF Doppler analysis tools accompanying Rebecca Potter's (KE2EBI) undergraduate t
 
 If you use this software in your work, please cite the Zenodo archive (DOI to be assigned on release) and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
 
+## Reproducing the thesis figures
+
+[FIGURES.md](FIGURES.md) maps each figure in the thesis to the script and exact command that
+produces it. See [TESTING.md](TESTING.md) for the verification performed before release.
+
 # Installation
 This software has been tested on Ubuntu Linux and Mac OS systems.
 
