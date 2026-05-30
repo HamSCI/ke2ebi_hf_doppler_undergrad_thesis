@@ -8,7 +8,9 @@ HF Doppler analysis tools accompanying Rebecca Potter's (KE2EBI) undergraduate t
 
 ## How to cite
 
-If you use this software in your work, please cite the Zenodo archive (DOI to be assigned on release) and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
+If you use this software in your work, please cite the Zenodo software archive (DOI to be assigned on release) and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
+
+The supporting dataset (GRAPE / PSWS HF Doppler recordings and CSVs required to run these scripts) is archived separately on Zenodo: [https://doi.org/10.5281/zenodo.20466479](https://doi.org/10.5281/zenodo.20466479) (DOI `10.5281/zenodo.20466479`). Download and extract it to `./data/` as described below.
 
 ## Reproducing the thesis figures
 

@@ -26,3 +26,14 @@ keywords:
   - PSWS
   - Grape
   - ray tracing
+references:
+  - type: data
+    title: "HamSCI PSWS HF Doppler observations of the 2024 Gannon geomagnetic storm (dataset)"
+    doi: "10.5281/zenodo.20466479"
+    authors:
+      - family-names: Potter
+        given-names: Rebecca
+      - family-names: Griffiths
+        given-names: Gwyn
+      - family-names: Frissell
+        given-names: Nathaniel A.
