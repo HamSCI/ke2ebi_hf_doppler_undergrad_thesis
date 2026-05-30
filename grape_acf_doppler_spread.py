@@ -204,8 +204,12 @@ plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + date + ".p
 
 fig, ax= plt.subplots()
 '''
+# Start a fresh figure for the Level plot. (The subplots() call that used to do
+# this lived in the commented-out Spread block above, so without this the Level
+# data was drawn on the Doppler axes and clipped by their ylim of -4..4.)
+fig, ax = plt.subplots()
 apply_xaxis_format(ax)
-plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')  
+plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')
 plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
