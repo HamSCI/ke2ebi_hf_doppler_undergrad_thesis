@@ -14,8 +14,8 @@ The supporting dataset (GRAPE / PSWS HF Doppler recordings and CSVs required to 
 
 ## Reproducing the thesis figures
 
-To regenerate every code-generated thesis figure in one step, run `./make_thesis_figures.sh`; it
-collects the results under their thesis filenames in `output/thesis_figures/`. [FIGURES.md](FIGURES.md)
+To regenerate every code-generated thesis figure in one step, run `python make_thesis_figures.py`;
+it collects the results under their thesis filenames in `output/thesis_figures/`. [FIGURES.md](FIGURES.md)
 maps each figure to the script and exact command that produces it, and [TESTING.md](TESTING.md)
 records the verification performed before release.
 

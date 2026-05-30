@@ -10,14 +10,13 @@ rendered; they may shift by ±1 if the thesis is recompiled with figures added, 
 To rebuild all of the code-generated thesis figures in one step, run:
 
 ```
-./make_thesis_figures.sh
+python make_thesis_figures.py
 ```
 
-It runs each script below (headless), and collects the results under their thesis
-filenames in `output/thesis_figures/` for direct comparison against the Overleaf
-`Figures/` directory. Set `PYTHON=/path/to/python` to choose an interpreter. The five
-`ACF_Combined_*.png` figures are produced by stacking the Doppler and S+N panels (see the
-ACF note below).
+It runs each script below (headless, using the same interpreter you invoke it with) and
+collects the results under their thesis filenames in `output/thesis_figures/` for direct
+comparison against the Overleaf `Figures/` directory. The five `ACF_Combined_*.png` figures
+are produced by stacking the Doppler and S+N panels (see the ACF note below).
 
 Two instrument-label notes that apply to all `w2naf_rx888` plots:
 
