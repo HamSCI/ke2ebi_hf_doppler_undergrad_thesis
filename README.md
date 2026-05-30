@@ -1,6 +1,10 @@
 # HamSCI Personal Space Weather Station Observations of the Gannon Geomagnetic Storm
 
-HF Doppler analysis tools accompanying Rebecca Potter's (KE2EBI) undergraduate thesis at the University of Scranton. The repository contains scripts for plotting and analyzing GRAPE / PSWS HF Doppler observations and for synthesizing Doppler spectrograms from ionospheric ray tracing.
+Code and documentation accompanying **Rebecca Potter's (KE2EBI) undergraduate thesis** at the
+University of Scranton, which uses HamSCI Personal Space Weather Station (PSWS) GRAPE / RX888 HF
+Doppler observations to study the May 2024 Gannon geomagnetic storm. This repository contains the
+scripts that produce the thesis figures, the shared data engine they build on, and broader HF
+Doppler tooling contributed by the project's collaborators.
 
 <!-- After Zenodo mints the DOI, replace the placeholder below:
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
@@ -8,267 +12,150 @@ HF Doppler analysis tools accompanying Rebecca Potter's (KE2EBI) undergraduate t
 
 ## How to cite
 
-If you use this software in your work, please cite the Zenodo software archive (DOI to be assigned on release) and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
+If you use this software, please cite the Zenodo software archive (DOI to be assigned on release)
+and the underlying thesis. See [CITATION.cff](CITATION.cff) for the canonical citation metadata.
 
-The supporting dataset (GRAPE / PSWS HF Doppler recordings and CSVs required to run these scripts) is archived separately on Zenodo: [https://doi.org/10.5281/zenodo.20466479](https://doi.org/10.5281/zenodo.20466479) (DOI `10.5281/zenodo.20466479`). Download and extract it to `./data/` as described below.
+The supporting dataset (GRAPE / PSWS HF Doppler recordings and CSVs required to run these scripts)
+is archived separately on Zenodo at [doi.org/10.5281/zenodo.20466479](https://doi.org/10.5281/zenodo.20466479)
+(DOI `10.5281/zenodo.20466479`). Download and extract it to `./data/` as described under
+[Installation](#installation).
 
-## Reproducing the thesis figures
+## Development history
 
-To regenerate every code-generated thesis figure in one step, run `python make_thesis_figures.py`;
-it collects the results under their thesis filenames in `output/thesis_figures/`. [FIGURES.md](FIGURES.md)
-maps each figure to the script and exact command that produces it, and [TESTING.md](TESTING.md)
-records the verification performed before release.
+This repository descends from a line of HamSCI HF Doppler tools, and most of its breadth predates
+the thesis:
 
-# Installation
-This software has been tested on Ubuntu Linux and Mac OS systems.
+1. **`w2naf/grapeDRF_doppler_model`** — the original project by Dr. Nathaniel Frissell (W2NAF):
+   "code for plotting GRAPE DigitalRF data with Shibaji Chakraborty's HF Doppler Model outputs on
+   top," with an early focus on eclipse HF Doppler. It contributed the core `GrapeDRF` spectrogram
+   engine and the `eclipse_calc` solar/eclipse library.
+2. **`g3zil/grapeDRF_doppler_model`** — a fork by Gwyn Griffiths (G3ZIL) that added the GRAPE
+   DigitalRF analysis suite (FFT spectrograms, complex-autocorrelation Doppler/spread, CWT peak
+   finding), the PyLap synthetic-spectrogram ray-tracing pipeline, and 3D two-hop sidescatter
+   modelling.
+3. **`HamSCI/ke2ebi_hf_doppler_undergrad_thesis`** (this repository) — developed by Rebecca Potter
+   (KE2EBI) on top of the G3ZIL fork to produce the analyses and figures in her thesis on the 2024
+   Gannon storm, then cleaned and archived.
+
+Accordingly, the documentation is organised so that the top-level README covers the thesis workflow,
+while the broader G3ZIL and W2NAF tooling is described in the linked
+[component documentation](#component-documentation) below.
+
+## Installation
+
+Tested on Ubuntu Linux and macOS.
 
 ### Download
-Clone the repository and run the software from the resulting directory.
+
+Clone the repository and run the software from the resulting directory:
 ```
 cd ~
 git clone https://github.com/HamSCI/ke2ebi_hf_doppler_undergrad_thesis.git
 cd ~/ke2ebi_hf_doppler_undergrad_thesis
 ```
-Execute all further commands in the ~/ke2ebi_hf_doppler_undergrad_thesis directory.
-Updates can be downloaded with:
-```
-git pull
-```
+Run all further commands in that directory. Update with `git pull`.
 
-## Requirements
-### Open environment
-Install the dependencies in requirements.txt:
+### Data
+
+The scripts read their input from `./data/`, which is **not** bundled with the code. Download the
+companion dataset from Zenodo (DOI `10.5281/zenodo.20466479`) and extract it so the layout is
+`./data/...`:
+```
+tar xzf data.tar.gz      # creates ./data/
+```
+See the dataset's own README for the directory layout and a checksum manifest.
+
+### Python dependencies
+
+Install the dependencies in `requirements.txt`:
 ```
 python -m pip install -r requirements.txt
 ```
-This code has been tested with python 3.10.16 in clean conda virtual environments on Mac OS 15.3.1 and Ubuntu Linux 22.04.5 LTS. It has also been tested with python 3.10.14 on Mac OS 10.14.6.
-
-### Externally managed environment
-The code is the same but the modules installation requires extra steps. It has been tested with python 3.12.3 on Ubuntu Linux 24.04 LTS. A virtual environment is created and activated in the directory `~/ke2ebi_hf_doppler_undergrad_thesis/.venv`, the latest version of pip is installed, and the required modules installed.
+Tested with Python 3.10.16 in clean conda environments on macOS 15.3.1 and Ubuntu 22.04.5 LTS, with
+3.10.14 on macOS 10.14.6, and with 3.11/3.12 on Ubuntu 24.04. For an externally managed environment,
+create a virtual environment first:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
 ```
-### Synthetic spectrogram scripts
-The synthetic spectrogram scripts (see below) require the ray tracing package PyLap to be installed from [GitHub](https://github.com/HamSCI/PyLap). 
-Note that as of September 2025 PyLap only assuredly works with PHaRLAP 4.5.0. There may be issues with its setup.sh in a protected environment.\
-Optionally, the synthspec.py script can output its data into a postgresql database currently on the localhost. Contact the author for details if you are interested in this option.
 
-# G3ZIL digital RF Doppler plotting and analysis
-The examples below assume one-day Grape DigitalRF data files in directories `./data/psws_grapeDRF/ch0_*` where `*` is a PSWS reporting station callsign. Multi-day stations are stored as one directory per day with a date suffix (for example `ch0_W2NAF_2024-04-08`); single-day stations omit the suffix (for example `ch0_G4HZX`, `ch0_N8GA`). This archive does not bundle the raw data; obtain station recordings from the HamSCI PSWS data portal and place them under `data/psws_grapeDRF/` to reproduce the example commands.
-Example channel names referenced below: ch0_G4HZX, ch0_N8GA, ch0_W2NAF_2024-04-08.
-Plots are output to ./output/plots/* where * is the callsign, and csv data files to ./output/csv/*
+The thesis figures and the GRAPE DRF analysis tools need only these dependencies. The
+**ray-tracing** tools (synthetic spectrograms and sidescatter) additionally require PyLap — see
+those docs under [Component documentation](#component-documentation).
 
-### Listing metadata
-To list the available metadata for a station the data channel name is the single command line argument, run:
+## How it works (thesis workflow)
+
+The thesis figures are produced by a small set of plotting scripts that sit on top of the shared
+`GrapeDRF` engine and the GRAPE DRF analysis tools.
+
+**Input data.** Two kinds of recording under `data/psws_grapeDRF/`:
+
+- `w2naf_rx888/` — a continuous wideband **RX888** DigitalRF recording for W2NAF (Spring Brook, PA)
+  spanning 8–29 May 2024. This is the input for the multi-day storm and quiet-day figures.
+- `ch0_<CALLSIGN>` — per-station GRAPE DigitalRF channels (single-day stations such as `ch0_G4HZX`,
+  `ch0_N8GA`; multi-day stations as one dated directory per day, e.g. `ch0_W2NAF_2024-05-10`).
+
+Plus two CSVs: `SYMH_GannonStorm.csv` (SYM-H index) and `W2NAF_May_2024_quiet_days(15MHz).csv`.
+
+**Shared engine.** `grapeDRF.py` (the `GrapeDRF` class) loads the DigitalRF data, computes Doppler
+spectrograms, and overlays the solar elevation angle via `eclipse_calc.solarContext`. The thesis
+multi-day spectrogram/stackplot scripts import and drive it. `grape_acf_doppler_spread.py` (a G3ZIL
+analysis tool) provides the per-day reduced Doppler / signal-to-noise data. These shared components
+are documented in [the engine doc](docs/eclipse_and_engine.md) and
+[the GRAPE DRF analysis doc](docs/grape_drf_analysis.md).
+
+**Thesis figure scripts** (see [FIGURES.md](FIGURES.md) for the exact command behind each figure):
+
+| Area | Script(s) |
+| --- | --- |
+| Transmitter/receiver map | `map_psws.py` |
+| Multi-frequency spectrograms (W2NAF) | `psws_spectrogram_with_colorbar.py` |
+| SYM-H index | `Gannon_storm_SYM-H_plot.py` |
+| Quiet-day stack & average | `quiet_day_stack.py`, `15MHz_average_quiet_day_doppler.py` |
+| Storm 15 MHz stackplot | `Gannon_storm_stackplot.py` |
+| Per-day reduced Doppler / S+N | `grape_acf_doppler_spread.py` |
+| Multi-day summary | `15MHz_multiday_summary.py` |
+| Extracted-Doppler / S+N analysis | `analyze_extracted_dop_shift.py`, `analyze_extracted_signal_to_noise.py` |
+
+**Regenerate everything at once:**
 ```
-python3 grape_digital_RF_metadata.py ch0_G4HZX
+python make_thesis_figures.py
 ```
-### Plotting a simple spectrogram
-The script requires four command line arguments, channel name, frequency index (from the metadata) start and end times in hours UTC. 
-For example, with frequency index 6 for 15 MHz between 8 and 13 UTC, run
-```
-python3 grape_fft_spectrogram.py ch0_G4HZX 6 8 13
-```
-An optional fifth command line argument DB produces a second plot combining the as-received spectrogram with a synthetic spectrogram derived from ray tracing - see [Part 4](#part-4-overlaying-as-received-and-synthetic-spectrograms) in the Synthetic Spectrograms section below.
+This runs the scripts above (headless) and collects the figures, under their thesis filenames, in
+`output/thesis_figures/`. [FIGURES.md](FIGURES.md) maps each thesis figure to its script and exact
+command; [TESTING.md](TESTING.md) records the verification performed before release.
 
-### Time domain Doppler analysis using complex autocorrelation
-The script plots time series of signal+noise (S+N)level, Doppler shift and frequency spread.
-The Doppler shift and spread estimates are only applicable where the spectrum is unimodal.
-The same four command line arguments are required, run:
-```
-python3 grape_acf_doppler_spread.py ch0_G4HZX 6 8 14 
-```
-### Plot single interval spectrum, identifying N peaks
-The script calculates a spectrum and fits Ricker wavelets with a Continuous Wavelet Transform (CWT) to identify peaks.
-The four command line arguments are, channel name, frequency index, time of the spectrum in decimal hours and N the number of peaks to find, run:
-```
-python3 grape_fft_CWT_single_plot.py ch0_W2NAF_2024-04-08 8 14.5 2
-```
-### Experimental multiple Doppler tracking
-This script is under development and may fail with data-dependent errors. Two (July 2025) Dopppler spectrum peaks in each time interval are identified from CWF fits. A small training set where each peak is correctly assigned to one of the N propagation modes is used with a forecasting tool to predict the next value for set A. Whichever data value is closest to the prediction in the next interval is assigned to set A et seq. 
-The script needs four command line arguments, channel name, frequency index, time of the spectrum in decimal hours and duration in minutes:
-```
-python3 grape_fft_CWT_tracking_prophet.py ch0_W2NAF_2024-04-08 8 14.4 80
-```
-Here are the example plots, first the raw data and second the assigned to mode:
+## Component documentation
 
-![Figure 9 traces raw and tracked](https://github.com/user-attachments/assets/ae258af9-0bc6-40ac-8c47-98eaaf18a03b)
+Broader tooling that ships in this repository but is not part of the thesis figure pipeline:
 
-# G3ZIL Synthetic spectrograms
-This set of scripts comprises steps for deriving and plotting a synthetic Doppler spectrogram by running a series of ray trace simulations using PyLap while also identifying the propagation modes.\
-Limitation: The pathfinder.sh script start time in its config.ini file and the command line duration in minutes must remain within one day UTC. That is, not span 00:00 UTC.
+| Document | Contributor | Contents |
+| --- | --- | --- |
+| [docs/grape_drf_analysis.md](docs/grape_drf_analysis.md) | G3ZIL | GRAPE DigitalRF metadata, FFT spectrograms, autocorrelation Doppler/spread, CWT peak finding and tracking. |
+| [docs/synthetic_spectrograms.md](docs/synthetic_spectrograms.md) | G3ZIL | Synthetic Doppler spectrograms from PyLap ray tracing (`pathfinder` → `modefinder` → `synthspec`) and overlay. **Requires PyLap.** |
+| [docs/sidescatter.md](docs/sidescatter.md) | G3ZIL | Two-hop sidescatter modelling and animation with 3D PyLap ray tracing. **Requires PyLap.** |
+| [docs/eclipse_and_engine.md](docs/eclipse_and_engine.md) | W2NAF | The shared `GrapeDRF` engine, the `eclipse_calc` solar/eclipse library, and the original eclipse Doppler work this repository grew from. |
 
-### Part 1 Finding all rays from the transmitter that land at a receiver via great circle paths using 2D ray tracing
-* pathfinder.py   Code to run PyLap ray tracing at a single specified time over a sweep of elevations incrementing by 0.005˚ to find all ray elevations landing at a receiver from a given transmitter location. The code genrates a csv file in the output/csv/receivercallsign subdirectory. The PyLap configuration is specified in a config file with a naming convention receivercallsign_config.ini in the config subdirectory. An example is given below. The config file name and specified time in YYmmddHHMM format form the two command line parameters to pathfinder.py:
-```
-python3 pathfinder.py ./config/N8GA_config.ini 202407260000
-```
-* pathfinder.sh   Bash code that runs a sequence of pathfinder.py for an interval specified in minutes. Currently the code is set to run ray traces at five minute steps over the specified number of minutes. Hence the following command line will produce a csv file with data every five minutes for 30 minutes:
-```
-./pathfinder.sh N8GA_config.ini 30 
-```
-* config.ini   This example is for WWV Fort Collins, CO to N8GA Ohio:
-  
-[settings]\
-ut = [2024,7,26,0,0]\
-r12 = 120\
-freq = 10\
-tx_grid = DN70LQ\
-rx_grid = EN80EE\
-nhops = 2\
-elev_start = 2\
-elev_stop = 45\
-[metadata]\
-tx = WWV\
-rx = N8GA
+## License
 
-An example csv file output for one five minute interval is:
+Copyright (C) 2024–2026 Rebecca Potter (KE2EBI), Gwyn Griffiths (G3ZIL), and Nathaniel A. Frissell
+(W2NAF).
 
-"Date, Hops, Init_elev, one_hop_virt_ht, one_hop_apogee, 2nd hop apogee, gnd_range, phase_path, geo_path, pylap_doppler"\
-2024-07-26 00:00:00,1,2.55,102.292,96.046,nan,1813.148,1834.42,1835.975,-0.173\
-2024-07-26 00:00:00,1,13.68,238.466,138.634,nan,1813.192,1826.658,1865.551,-4.324\
-2024-07-26 00:00:00,2,33.07,nan,218.983,221.31,1813.605,1942.765,2077.204,-7.736
+Released under the GNU General Public License v3.0 or later — see [LICENSE](LICENSE) for the full
+text.
 
-_Note that there is probably an issue (September 2025) with PyLap's own Doppler computation._
+## Acknowledgements
 
-### Part 2 Assigning a propagation mode to each ray that landed at the receiver
-* modefinder.py After reading in the csv file of ray parameters generated by pathfinder.py modefinder.py tests each ray against a set of heuristics (mental short cuts, rules of thumb) to asssign each ray a great circle propagation mode. Recall that these are outputs of 2D ray tracing. Currently the code tests each ray against eight possible modes:\
-1E 1E high ray\
-2E 2E high ray\
-1F 1F high ray\
-2F 2F high ray\
-where the initial numeral is the number of hops and high rays are rays with steeper elevation angles that penetrate higher into the ionosphere and hence can also land at the same distance as a lower elevation ray. Some of these high rays will be ducted, or Pedersen rays. A test for those will be added to the heuristics.\
-The current set of heuristics, in heuristics.ini in the config subdirectory is:\
-[propagation]\
-min_apogee_E=85\
-max_apogee_E=150\
-min_apogee_F=151\
-min_hdashF-hF=45\
-max_hdashF-hF=85\
-elev_diff_lo_hi=0.5\
-sep_EloEhi=5\
-; September 2025 heights are in km, elevations in degrees
+I am very grateful to my thesis advisor, Dr. Nathaniel Frissell, for providing resources,
+mentorship, and positive encouragement throughout this project. I am also grateful to my committee
+members Dr. Juan Serna and Dr. Declan Mulhall for their constructive feedback and support both in
+this project and my overall academic endeavors throughout my time at the University of Scranton. More
+thanks go to the collaborators whom I met with weekly to discuss my progress and received advice from
+throughout this academic year: Gwyn Griffiths, Dr. Kuldeep Pandey, Dr. Sarah Over, Dr. Mary Lou West,
+Gary Mitkin, Dr. Rob Suggs, and Dr. Jay Weitzen. Their expertise and readiness to share it played a
+strong role in this project's success.
 
-The script is called with two command line arguments, the subdirectory callsign and start datetime as in pathfinder.py:
-```
-python3 modefinder.py N8GA 202407260000
-```
-The output is a csv file in the ./output/csv/callsign subdirectory with mode designators and a color for each mode and a plot in the ./output/plots/callsign subdirectory. The plot is a scatterplot of initial ray elevation angles arriving at the receiver against time with the rays color coded as to propagation mode. An example plot is:
-<img width="800" height="400" alt="Initial_Elevation" src="https://github.com/user-attachments/assets/f9822650-579f-4df8-8e3b-f0c060a73ec9" />
-
-### Part 3 Synthesizing a Spectrum: Calculate Doppler shift for each propagation mode
-* sythspec.py The script reads in the csv file generated by modefinder.py, calculates Doppler shift fom the difference in phase path between successive time intervals and outputs a csv file and optionally uploads to a database.\
-The script is called with two mandatory command line arguments, the subdirectory callsign and start datetime as in modefinder.py. An optional third argument DB triggers data upload to a local postgresql database:
-```
-python3 synthspec.py N8GA 202407260000
-```
-The raw Doppler estimate, rate of change of phase path, is adjusted to account for the actual ground landing distance. This is because jitter, with an rms of about 400 metres in the ray landing distance with ray elevation increments of 0.005˚ add noise to the Doppler estimate. After this correction the assigned-to-mode Doppler shifts are (with a few outliers) smooth, as in this plot for the time interval of ray elevations above:
-
-<img width="800" height="400" alt="WWV-N8GA_GG_doppler" src="https://github.com/user-attachments/assets/9979da4d-5730-480c-8eeb-cbaf968b8087" />
-
-synthspec.py also calculates and plots the propagation delay separated by mode.
-
-### Part 4 Overlaying as received and synthetic spectrograms
-grape_fft_spectrogram.py can be used with an optional fifth command line argument DB to overlay as-received and synthetic spectrograms. The data for the synthetic spectrogram must already be in the local postgresql database. That is, script synthspec.py must have been run with the DB option and of course a local database configured:
-```
-python3 grape_fft_spectrogram.py ch0_W2NAF_2024-04-08 7 0 24 DB
-```
-produces the plot below. Of course there are several differences, but each likely tells us something about actual propagation compared with the climate of the International Reference Ionosphere.
-
-<img width="800" height="300" alt="Spectrogram+Synth_10 0MHz_2024-04-08" src="https://github.com/user-attachments/assets/7e634813-69d2-46cc-8a6e-e9c58ae536b1" />
-
-# G3ZIL Two-hop sidescatter computation and visualisation
-This set of scripts that uses 3D PyLap ray tracing to model two-hop sidescatter using a simplified approach where a pseudo-transmitter is placed at the receiver and reciprocity is assumed. The product of transmitter and pseudo transmitter ray landing spots in 1˚ by 1˚ boxes is derived and plotted. \
-The code automatically sets the bounding box for the ionosphere grid and the subsequent plotting suitable for the geometry of the transmitter and receiver locations.
-Current limitations: Northern Hemisphere only.\
-                     Northernmost of tx and rx must be below 58˚N else the grid would extend beyond the North Pole causing complications.\
-                     Still working on automatic the metric amplitude scaling for the contour map for animations.
-
-Plots are output to ./output/plots/SS/* where * is the callsign, and csv data files to ./output/csv/SS/*
-
-### Part 1 Calculation of ray landing spots for transmitter and pseudo transmitter
-python3 SS_sidescatter.py is used with two command line arguments, the config file name and specified time in YYmmddHHMM format. The conifig.ini file (example below) is an extended version of that used for 2D great circle paths (example below).
-```
-python3 SS_sidescatter.py ./config/W2NAF_config.ini 202407270000
-```
-
-* config.ini   This example is for CHU, Ottowa to W2NAF PA. Note that several parameters have 0 in the initial state.
-  
-Scripts write results for these parameters to be used by subsequent scripts. The elevation step interval is 1˚, azimuth scan is a full 360˚. Computer memory limits the azimuth resolution: here 3˚ is used for an 8 GB machine. 
-  
-[settings]\
-ut = [2024,9,27,0,0]\
-r12 = 114\
-freq = 14.67\
-tx_grid = FN25CH\
-rx_grid = FN21EI\
-nhops = 1\
-elev_start = 3\
-elev_stop = 45\
-distance = 0\
-bearing = 0\
-[metadata]\
-tx = CHU\
-rx = W2NAF\
-[plots]\
-legend = upper right\
-u_dopp_lim = 3\
-l_dopp_lim = -3\
-[3d_sidescatter]\
-ray_inc = 3\
-metric_max_lat = 0\
-metric_max_lon = 0\
-max_metric = 0
-
-The output is file timestamp_ground_coords.csv in the ./output/csv/SS/callsign directory where timestamp is the second command line parameter and callsign is from the config file name. An example of a timestamp_ground_coords.csv is:
-
-
-0,0.0,2,5.0,154.513,-4.461,70.004264,-75.479248\
-0,0.0,3,6.0,158.077,-4.566,67.67416,-75.53916\
-0,0.0,4,7.0,161.799,-4.697,65.972454,-75.570397
-
-where the fields are: source (0=tx, 1=pseudo-tx at rx), ray bearing (˚), rayId, initial elevation (˚), apogee (km), PyLap Doppler, (Hz), landing spot lat (˚), Landing spot lon (˚).
-
-
-### Part 2 Calculation and plotting of ray landing spots and sidescatter likelihood metric
-python3 SS_sidescatter_plot.py takes three command line arguments, the config file name, specified time in YYmmddHHMM format and a frame number for when it is used with the bash script SS_animate.sh. In stand alone use the frame number is left to the user (max 999).
-```
-python3 SS_sidescatter_plot.py ./config/W2NAF_config.ini 202409270000 0
-```
-Two plot files are sent to the ./output/plots/SS/callsign directory: sidescatter.png is the plot of ray landing spots and 2F_sidescatter_metric_000.png is a contour map of the sidescatter likelihood metric. Here 000 in the file name is the frame number left padded to three digits.
-
-Here is an example ray landing spot map for CHU to W2NAF on 14.67 MHz at 00:00 UTC on 27 September 2024:
-
-<img width="560" height="480" alt="sidescatter" src="https://github.com/user-attachments/assets/d43d450e-58a0-46e0-9d3c-304c180825e2" />
-
-And the plot of the sidescatter likelihood metric:
-
-<img width="560" height="448" alt="2F_sidescatter_metric_000" src="https://github.com/user-attachments/assets/9a32c588-214e-4eae-9edf-42698a8203d4" />
-
-### Part 3 Generate sidescatter metric image sequence and animation
-SS_animate.sh is a shell script that runs SS_sidescatter.py and then SS_sidescatter_plot.py a user-defined number of times and at user-defined time intervals to generate multiple sidescatter likelihood metric plots and an mp4 animation of those frames. The files are stored in the ./output/plots/SS/callsign directory. Note that it can take minutes to generate each frame (e.g. 4 minutes on a 4-core i5 machine) The script takes three command line parameters, the config file name, the number of minutes total duration and the frame interval in minutes. Hence, this example gives simulations every 20 minutes for 360 minutes, that is should be 18 frames.
-```
-./SS_animate.sh W2NAF_config.ini 360 20
-```
-Note that ffmpeg (that geneates the mp4 file) can both insert and drop frames depending how many one has.
-Here is an example animation:
-
-https://github.com/user-attachments/assets/95268232-11b4-41ee-9da1-0c760e2c7cab
-
-
-December 2025
-
-# License
-
-Copyright (C) 2024-2026 Rebecca Potter (KE2EBI), Gwyn Griffiths (G3ZIL), and Nathaniel A. Frissell (W2NAF).
-
-This software is released under the GNU General Public License v3.0 or later — see [LICENSE](LICENSE) for the full text.
-
-# Acknowledgements
-
-I am very grateful to my thesis advisor, Dr. Nathaniel Frissell, for providing resources, mentorship, and positive encouragement throughout this project. I am also grateful to my committee members Dr. Juan Serna and Dr. Declan Mulhall for their constructive feedback and support both in this project and my overall academic endeavors throughout my time at the University of Scranton. More thanks go to the collaborators whom I met with weekly to discuss my progress and received advice from throughout this academic year: Gwyn Griffiths, Dr. Kuldeep Pandey, Dr. Sarah Over, Dr. Mary Lou West, Gary Mitkin, Dr. Rob Suggs, and Dr. Jay Weitzen. Their expertise and readiness to share it played a strong role in this project’s success.
-
-We are grateful for the support of NSF Grants AGS-2045755, AGS-2432821, AGS-2432822, AGS-2432824, AGS-2432823, OPP-2332427, and NASA Grants 80NSSC23K1322, 80NSSC25K7026.
+We are grateful for the support of NSF Grants AGS-2045755, AGS-2432821, AGS-2432822, AGS-2432824,
+AGS-2432823, OPP-2332427, and NASA Grants 80NSSC23K1322, 80NSSC25K7026.
