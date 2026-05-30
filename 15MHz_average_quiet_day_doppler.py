@@ -137,6 +137,15 @@ legend_elements = [
     Line2D([0], [0], color='blue',  linewidth=1, label='+STDEV'),
 ]
 
+# Fresh figure for the windowed (sunrise-peak) plot, restricted to the selected
+# hours. Without a new figure this was drawn on the full-day axes above (which
+# kept their 0-24 xlim and scatter), so it showed the whole day instead of the
+# start_time_utc-end_time_utc window.
+plt.figure()
+plt.gcf().set_size_inches(8, 3, forward=True)
+ax = plt.gca()
+ax.set_xlim(start_time_decimal, end_time_decimal)
+
 plt.scatter(time_window, doppler_window, color='black', s=1.5, label='Average')
 plt.scatter(time_window, lower_error_window, color='red', s=1.0, label='-STDEV')
 plt.scatter(time_window, upper_error_window, color='blue', s=1.0, label='+STDEV')
