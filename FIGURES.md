@@ -18,14 +18,9 @@ collects the results under their thesis filenames in `output/thesis_figures/` fo
 comparison against the Overleaf `Figures/` directory. The five `ACF_Combined_*.png` figures
 are produced by stacking the Doppler and S+N panels (see the ACF note below).
 
-Two instrument-label notes that apply to all `w2naf_rx888` plots:
-
-- The thesis labels the W2NAF instrument **GRAPE1**, while the shipped data directory is
-  `w2naf_rx888`, so the regenerated figures read **RX888** in the title. The plots are otherwise
-  pixel-identical. To reproduce the exact thesis label, rename the data directory to
-  `w2naf_grape1` (and pass that name) — no code change is needed.
-- All multi-day `w2naf_rx888` figures read the continuous RX888 Digital RF recording in
-  `data/psws_grapeDRF/w2naf_rx888/`.
+All multi-day `W2NAF` figures read the continuous wideband **RX888** Digital RF recording in
+`data/psws_grapeDRF/w2naf_rx888/`, so their titles read "W2NAF (RX888)". (Earlier thesis figures
+mislabeled this instrument as "GRAPE1"; those figures were regenerated and corrected.)
 
 ## Chapter 1 — Background (external images, not produced by this code)
 
