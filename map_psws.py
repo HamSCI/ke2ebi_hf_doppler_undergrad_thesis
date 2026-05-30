@@ -1,5 +1,6 @@
 # Plotting PSWS on map of contiguous US
 
+import os
 from geographiclib.geodesic import Geodesic
 import numpy as np
 import matplotlib as mpl
@@ -129,5 +130,6 @@ for s in stations:
 
 
 plt.tight_layout()
+os.makedirs('./output/maps', exist_ok=True)
 plt.savefig('./output/maps/psws_map.png', dpi=300, bbox_inches='tight')
 plt.show()

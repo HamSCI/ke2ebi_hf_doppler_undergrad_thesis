@@ -35,7 +35,7 @@ python -m pip install -r requirements.txt
 This code has been tested with python 3.10.16 in clean conda virtual environments on Mac OS 15.3.1 and Ubuntu Linux 22.04.5 LTS. It has also been tested with python 3.10.14 on Mac OS 10.14.6.
 
 ### Externally managed environment
-The code is the same but the modules installation requires extra steps. It has been tested with python 3.12.3 on Ubuntu Linux 24.04 LTS. A virtual environment is created and activated in the directory ~/grapeDRF_doppler_model/.venv, the latest version of pip is installed, and the required modules installed.
+The code is the same but the modules installation requires extra steps. It has been tested with python 3.12.3 on Ubuntu Linux 24.04 LTS. A virtual environment is created and activated in the directory `~/ke2ebi_hf_doppler_undergrad_thesis/.venv`, the latest version of pip is installed, and the required modules installed.
 ```
 python3 -m venv .venv
 source .venv/bin/activate
@@ -47,20 +47,9 @@ The synthetic spectrogram scripts (see below) require the ray tracing package Py
 Note that as of September 2025 PyLap only assuredly works with PHaRLAP 4.5.0. There may be issues with its setup.sh in a protected environment.\
 Optionally, the synthspec.py script can output its data into a postgresql database currently on the localhost. Contact the author for details if you are interested in this option.
 
-# W2NAF Eclipse Plotting
-To make a plot, run:
-```
-python plot_w2naf_grapeDRF_2024eclipse.py
-```
-
-This will automatically create an `output/` directory and the desired plot in `output/w2naf_2024eclipse/20240408.0000_20240409.0000_w2naf_WDgrape_20_15_10_5.png`.
-
-
-![image](20240408.0000_20240409.0000_w2naf_WDgrape_20_15_10_5.png)
-
 # G3ZIL digital RF Doppler plotting and analysis
-The examples below assume one-day Grape DigitalRF data files in directories `./data/psws_grapeDRF/ch0_*` where `*` is a PSWS reporting station callsign. This archive does not bundle the raw data; obtain station recordings from the HamSCI PSWS data portal and place them under `data/psws_grapeDRF/` to reproduce the example commands.
-Example channel names referenced below: ch0_G4HZX, ch0_N8GA, ch0_W2NAF.
+The examples below assume one-day Grape DigitalRF data files in directories `./data/psws_grapeDRF/ch0_*` where `*` is a PSWS reporting station callsign. Multi-day stations are stored as one directory per day with a date suffix (for example `ch0_W2NAF_2024-04-08`); single-day stations omit the suffix (for example `ch0_G4HZX`, `ch0_N8GA`). This archive does not bundle the raw data; obtain station recordings from the HamSCI PSWS data portal and place them under `data/psws_grapeDRF/` to reproduce the example commands.
+Example channel names referenced below: ch0_G4HZX, ch0_N8GA, ch0_W2NAF_2024-04-08.
 Plots are output to ./output/plots/* where * is the callsign, and csv data files to ./output/csv/*
 
 ### Listing metadata
@@ -87,13 +76,13 @@ python3 grape_acf_doppler_spread.py ch0_G4HZX 6 8 14
 The script calculates a spectrum and fits Ricker wavelets with a Continuous Wavelet Transform (CWT) to identify peaks.
 The four command line arguments are, channel name, frequency index, time of the spectrum in decimal hours and N the number of peaks to find, run:
 ```
-python3 grape_fft_CWT_single_plot.py ch0_W2NAF 8 14.5 2
+python3 grape_fft_CWT_single_plot.py ch0_W2NAF_2024-04-08 8 14.5 2
 ```
 ### Experimental multiple Doppler tracking
 This script is under development and may fail with data-dependent errors. Two (July 2025) Dopppler spectrum peaks in each time interval are identified from CWF fits. A small training set where each peak is correctly assigned to one of the N propagation modes is used with a forecasting tool to predict the next value for set A. Whichever data value is closest to the prediction in the next interval is assigned to set A et seq. 
 The script needs four command line arguments, channel name, frequency index, time of the spectrum in decimal hours and duration in minutes:
 ```
-python3 grape_fft_CWT_tracking_prophet.py ch0_W2NAF 8 14.4 80
+python3 grape_fft_CWT_tracking_prophet.py ch0_W2NAF_2024-04-08 8 14.4 80
 ```
 Here are the example plots, first the raw data and second the assigned to mode:
 
@@ -176,7 +165,7 @@ synthspec.py also calculates and plots the propagation delay separated by mode.
 ### Part 4 Overlaying as received and synthetic spectrograms
 grape_fft_spectrogram.py can be used with an optional fifth command line argument DB to overlay as-received and synthetic spectrograms. The data for the synthetic spectrogram must already be in the local postgresql database. That is, script synthspec.py must have been run with the DB option and of course a local database configured:
 ```
-python3 grape_fft_spectrogram.py ch0_W2NAF 7 0 24 DB
+python3 grape_fft_spectrogram.py ch0_W2NAF_2024-04-08 7 0 24 DB
 ```
 produces the plot below. Of course there are several differences, but each likely tells us something about actual propagation compared with the climate of the International Reference Ionosphere.
 
