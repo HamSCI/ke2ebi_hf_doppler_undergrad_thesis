@@ -28,6 +28,8 @@ ax.axvline(x=datetime(2024, 5, 11, 2, 15), color='blue', linestyle='--', linewid
 ax.tick_params(axis='both', labelsize=20)
 ax.legend(fontsize=16)
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
+ax.xaxis.set_major_locator(mdates.HourLocator(interval=12))   # ticks every 12 h
+ax.set_xlim(datetime(2024, 5, 10), datetime(2024, 5, 14))     # crop to the storm window
 fig.autofmt_xdate()
 ax.set_xlabel('Time (UTC)', size=25.0, fontweight='bold')
 ax.set_ylabel('SYM-H (nT)', size=25.0, fontweight='bold')

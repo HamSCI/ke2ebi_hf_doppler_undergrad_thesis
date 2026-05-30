@@ -19,8 +19,8 @@ lon      = data['lon']
 
 # Transmitters
 transmitters = {
-    'WWV': {'lat': 40.6683, 'lon': -105.0384, 'color': 'yellow'},
-    'CHU': {'lat': 45.2964, 'lon': -75.7561, 'color': 'lime'}
+    'WWV': {'lat': 40.6683, 'lon': -105.0384, 'color': 'black'},
+    'CHU': {'lat': 45.2964, 'lon': -75.7561, 'color': 'purple'}
 }
 
 # Path colors
