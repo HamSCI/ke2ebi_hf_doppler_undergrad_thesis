@@ -1,0 +1,36 @@
+{
+  "upload_type": "software",
+  "title": "HamSCI Personal Space Weather Station Observations of the Gannon Geomagnetic Storm",
+  "creators": [
+    { "name": "Potter, Rebecca", "affiliation": "University of Scranton", "orcid": "0009-0005-7935-549X" },
+    { "name": "Griffiths, Gwyn", "orcid": "0000-0002-6228-7698" },
+    { "name": "Frissell, Nathaniel A.", "affiliation": "University of Scranton", "orcid": "0000-0002-8398-4222" }
+  ],
+  "description": "HF Doppler analysis software accompanying Rebecca Potter's (KE2EBI) undergraduate thesis at the University of Scranton, studying the May 2024 Gannon geomagnetic storm with HamSCI Personal Space Weather Station (PSWS) GRAPE / RX888 observations. Includes the scripts that reproduce the thesis figures and broader GRAPE DigitalRF analysis, synthetic-spectrogram ray tracing, and sidescatter tooling. The supporting dataset is archived separately (see related identifiers).",
+  "access_right": "open",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "amateur radio",
+    "HF propagation",
+    "ionosphere",
+    "Doppler shift",
+    "HamSCI",
+    "PSWS",
+    "Grape",
+    "ray tracing",
+    "geomagnetic storm",
+    "Gannon storm",
+    "space weather"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementedBy",
+      "scheme": "doi",
+      "identifier": "10.5281/zenodo.20466479",
+      "resource_type": "dataset"
+    }
+  ],
+  "communities": [
+    { "identifier": "hamsci" }
+  ]
+}
