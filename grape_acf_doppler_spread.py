@@ -173,14 +173,20 @@ ax.set_xlim(0, 23 + 59/60)
 ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])  # last tick = 23:59
 #====================================================================
 
-SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
 def utc_to_decimal_hours(t):
-   return t.hour + t.minute/60 + t.second/3600
+    return t.hour + t.minute/60 + t.second/3600
+
+SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
 SSC_decimal = utc_to_decimal_hours(SSC)
+
+main_phase_end = datetime.strptime("02:15:00", "%H:%M:%S").time()
+main_phase_end_decimal = utc_to_decimal_hours(main_phase_end)
 
 plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequency (Hz)')  
 if date == "2024-05-10":
     plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='SSC')
+if date == "2024-05-11":
+    plt.axvline(x=main_phase_end_decimal, color='blue', linestyle='--', linewidth=1, label='Main phase end at 2:15 UTC')
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
@@ -211,7 +217,10 @@ fig, ax= plt.subplots()
 fig, ax = plt.subplots()
 apply_xaxis_format(ax)
 plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')
-plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
+if date == "2024-05-10":
+    plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='SSC')
+if date == "2024-05-11":
+    plt.axvline(x=main_phase_end_decimal, color='blue', linestyle='--', linewidth=1, label='Main phase end at 2:15 UTC')
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
