@@ -59,9 +59,10 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------ #
     sym_filename = 'SYMH_GannonStorm.csv'
     sym_data     = np.genfromtxt(os.path.join(data, sym_filename), delimiter=',', skip_header=2, dtype=str)
-    timestamp    = np.array([datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ')
-                             for t in sym_data[:, 0]])
-    SYM_H        = sym_data[:, 1].astype(float)
+    sym_data  = np.genfromtxt(os.path.join(data, sym_filename), delimiter=',', skip_header=2, dtype=str)
+    clean     = [row for row in sym_data if not row[0].startswith('EPOCH')]
+    timestamp = np.array([datetime.datetime.strptime(row[0], '%Y-%m-%dT%H:%M:%S.%fZ') for row in clean])
+    SYM_H     = np.array([float(row[1]) for row in clean])
 
     # ------------------------------------------------------------------ #
     # 2. Load Doppler / S+N CSVs and build datetime arrays
@@ -79,6 +80,8 @@ if __name__ == '__main__':
     dop_times, dop_vals, level_vals = [], [], []
     for fname, origin in zip(day_files, day_origins):
         d = np.genfromtxt(fname, delimiter=',', skip_header=3)
+        mask = ~np.isnan(d).any(axis=1)   # drop any row with a NaN in any column
+        d = d[mask]
         hours = d[:, 0]
         dop_times.append(np.array([origin + datetime.timedelta(hours=float(h)) for h in hours]))
         dop_vals.append(d[:, 1])

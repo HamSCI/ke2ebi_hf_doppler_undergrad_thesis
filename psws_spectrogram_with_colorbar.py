@@ -46,6 +46,15 @@ station_dct = {}
 sdct        = station_dct[callsign] = {}
 
 if __name__ == '__main__':
+    import sys
+    # Optional CLI args: start date (YYYY-MM-DD) and number of days.
+    # With no args the defaults above are used (8 May 2024, 1 day).
+    if len(sys.argv) > 1:
+        sDate = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
+    if len(sys.argv) > 2:
+        num_days = int(sys.argv[2])
+    eDate = sDate + datetime.timedelta(days=num_days)
+
     sDate_str = sDate.strftime('%Y%m%d')
     eDate_str = eDate.strftime('%Y%m%d')
     output_dir = os.path.join('output', data_source, f'{data_source}_{sDate_str}-{eDate_str}')

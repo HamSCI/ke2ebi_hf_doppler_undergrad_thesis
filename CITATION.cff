@@ -6,7 +6,7 @@ authors:
   - family-names: Potter
     given-names: Rebecca
     affiliation: "University of Scranton"
-    # orcid: "https://orcid.org/XXXX-XXXX-XXXX-XXXX"  # TODO: add if Rebecca has one
+    orcid: "https://orcid.org/0009-0005-7935-549X"
   - family-names: Griffiths
     given-names: Gwyn
     orcid: "https://orcid.org/0000-0002-6228-7698"
@@ -15,7 +15,7 @@ authors:
     orcid: "https://orcid.org/0000-0002-8398-4222"
     affiliation: "University of Scranton"
 version: "2026.05"
-date-released: "2026-05-21"
+date-released: "2026-05-30"
 license: GPL-3.0-or-later
 repository-code: "https://github.com/HamSCI/ke2ebi_hf_doppler_undergrad_thesis"
 keywords:
@@ -27,3 +27,14 @@ keywords:
   - PSWS
   - Grape
   - ray tracing
+references:
+  - type: data
+    title: "HamSCI PSWS HF Doppler observations of the 2024 Gannon geomagnetic storm (dataset)"
+    doi: "10.5281/zenodo.20466479"
+    authors:
+      - family-names: Potter
+        given-names: Rebecca
+      - family-names: Griffiths
+        given-names: Gwyn
+      - family-names: Frissell
+        given-names: Nathaniel A.

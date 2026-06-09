@@ -86,7 +86,8 @@ frequency=freqList[freq_index]        # This comes from command line argument an
 csv_dir=os.path.join(output_dir,'csv',theCallsign)
 if not os.path.exists(csv_dir):
   os.makedirs(csv_dir)
-csv_filename=csv_dir+'/ACF_FWL_data_' + "_" + str(frequency) + "MHz_" + date + ".csv"    # 
+time_range=str(hours_offset) + "-" + str(int(sys.argv[4]))   # requested start-stop hours, e.g. "0-24"
+csv_filename=csv_dir+'/ACF_FWL_data_' + "_" + str(frequency) + "MHz_" + date + "_" + time_range + ".csv"    #
 
 time_window=60                               # 60 seconds is default for each processed data ensemble, but could be changed for special uses
 length=int(np.floor(length*(60/time_window))) # in case time window changed, then alter length accordingly
@@ -172,13 +173,20 @@ ax.set_xlim(0, 23 + 59/60)
 ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])  # last tick = 23:59
 #====================================================================
 
-SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
 def utc_to_decimal_hours(t):
-   return t.hour + t.minute/60 + t.second/3600
+    return t.hour + t.minute/60 + t.second/3600
+
+SSC = datetime.strptime("17:10:00", "%H:%M:%S").time()
 SSC_decimal = utc_to_decimal_hours(SSC)
 
+main_phase_end = datetime.strptime("02:15:00", "%H:%M:%S").time()
+main_phase_end_decimal = utc_to_decimal_hours(main_phase_end)
+
 plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequency (Hz)')  
-plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
+if date == "2024-05-10":
+    plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='SSC')
+if date == "2024-05-11":
+    plt.axvline(x=main_phase_end_decimal, color='blue', linestyle='--', linewidth=1, label='Main phase end at 2:15 UTC')
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
@@ -186,8 +194,7 @@ plt.ylim(-4,4)
 plt.ylabel("Doppler shift (Hz)")
 plt.gcf().set_size_inches(8, 3, forward=True)
 plt.tight_layout()
-#plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
-plt.savefig('recent2.png')
+plt.savefig(plot_dir +"/ACF_Doppler" + "_" + str(frequency) + "MHz_" + date + ".png", dpi=600)
 plt.show()
 
 #fig, ax= plt.subplots()
@@ -204,9 +211,16 @@ plt.savefig(plot_dir +"/ACF_Spread" + "_" + str(frequency) + "MHz_" + date + ".p
 
 fig, ax= plt.subplots()
 '''
+# Start a fresh figure for the Level plot. (The subplots() call that used to do
+# this lived in the commented-out Spread block above, so without this the Level
+# data was drawn on the Doppler axes and clipped by their ylim of -4..4.)
+fig, ax = plt.subplots()
 apply_xaxis_format(ax)
-plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')  
-plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
+plt.plot(time[0:length],dB_level[0:length],'.',color="black", label='Signal level (dB)')
+if date == "2024-05-10":
+    plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='SSC')
+if date == "2024-05-11":
+    plt.axvline(x=main_phase_end_decimal, color='blue', linestyle='--', linewidth=1, label='Main phase end at 2:15 UTC')
 plt.suptitle("ACF S+N Level " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)

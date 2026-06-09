@@ -1,5 +1,6 @@
 # Plotting PSWS on map of contiguous US
 
+import os
 from geographiclib.geodesic import Geodesic
 import numpy as np
 import matplotlib as mpl
@@ -18,8 +19,8 @@ lon      = data['lon']
 
 # Transmitters
 transmitters = {
-    'WWV': {'lat': 40.6683, 'lon': -105.0384, 'color': 'yellow'},
-    'CHU': {'lat': 45.2964, 'lon': -75.7561, 'color': 'lime'}
+    'WWV': {'lat': 40.6683, 'lon': -105.0384, 'color': 'black'},
+    'CHU': {'lat': 45.2964, 'lon': -75.7561, 'color': 'purple'}
 }
 
 # Path colors
@@ -129,5 +130,6 @@ for s in stations:
 
 
 plt.tight_layout()
+os.makedirs('./output/maps', exist_ok=True)
 plt.savefig('./output/maps/psws_map.png', dpi=300, bbox_inches='tight')
 plt.show()

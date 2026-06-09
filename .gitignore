@@ -165,3 +165,6 @@ data/
 .DS_Store
 
 settings.json
+
+# Local project handoff doc (kept out of the public repo)
+HANDOFF.md

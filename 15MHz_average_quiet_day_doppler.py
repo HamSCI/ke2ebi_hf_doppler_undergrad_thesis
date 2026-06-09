@@ -48,14 +48,14 @@ def format_time(x, pos=None):
 
 # Create custom legend handles
 legend_elements = [
-    Line2D([0], [0], color='black', linewidth=1, label='Average'),
-    Line2D([0], [0], color='red',   linewidth=1, label='-STDEV'),
-    Line2D([0], [0], color='blue',  linewidth=1, label='+STDEV'),
+    Line2D([0], [0], color='black',  linewidth=1, label='Average'),
+    Line2D([0], [0], color='red',    linewidth=1, label='-STDEV'),
+    Line2D([0], [0], color='purple', linewidth=1, label='+STDEV'),
 ]
 
 plt.scatter(timestamp, avg_dop, color='black', s=1.5, label='Average')
 plt.scatter(timestamp, lower_error, color='red', s=0.25, label='-STDEV')
-plt.scatter(timestamp, upper_error, color='blue', s=0.25, label='+STDEV')
+plt.scatter(timestamp, upper_error, color='purple', s=0.25, label='+STDEV')
 plt.title('May 2024 Quiet Time Average | W2NAF at 15.0 MHz', weight='bold', size=18)
 #plt.suptitle('W2NAF at 15.0 MHz', fontsize=12)
 plt.xlabel('Time (UTC)', size=14)
@@ -69,6 +69,12 @@ ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
 ax.set_xlim(0, 23 + 59/60)
 ax.set_xticks([0, 3, 6, 9, 12, 15, 18, 21, 23 + 59/60])  # last tick = 23:59
 ax.tick_params(axis='both', labelsize=12)  # Set whatever size you want
+
+# 'Sunrise peak' annotation box over 08:00-13:00 UTC (matches the thesis figure)
+from matplotlib.patches import Rectangle
+y0, y1 = ax.get_ylim()
+ax.add_patch(Rectangle((8, y0), 5, y1 - y0, fill=False, edgecolor='black', linewidth=1.5))
+ax.text(10.5, y1 - 0.04 * (y1 - y0), 'Sunrise peak', ha='center', va='top', fontsize=12)
 
 plt.legend(handles=legend_elements)
 plt.tight_layout()
@@ -136,6 +142,15 @@ legend_elements = [
     Line2D([0], [0], color='red',   linewidth=1, label='-STDEV'),
     Line2D([0], [0], color='blue',  linewidth=1, label='+STDEV'),
 ]
+
+# Fresh figure for the windowed (sunrise-peak) plot, restricted to the selected
+# hours. Without a new figure this was drawn on the full-day axes above (which
+# kept their 0-24 xlim and scatter), so it showed the whole day instead of the
+# start_time_utc-end_time_utc window.
+plt.figure()
+plt.gcf().set_size_inches(8, 3, forward=True)
+ax = plt.gca()
+ax.set_xlim(start_time_decimal, end_time_decimal)
 
 plt.scatter(time_window, doppler_window, color='black', s=1.5, label='Average')
 plt.scatter(time_window, lower_error_window, color='red', s=1.0, label='-STDEV')

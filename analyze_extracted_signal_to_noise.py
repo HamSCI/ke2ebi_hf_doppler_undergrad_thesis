@@ -11,12 +11,12 @@ base_directory = './'
 csv_dir        = os.path.join(base_directory,'output','csv',station)
 output_dir     = os.path.join(base_directory,'output')
 
-file_name = 'ACF_FWL_data__15.0MHz_2024-05-11.csv'
+file_name = 'ACF_FWL_data__15.0MHz_2024-05-11_0-24.csv'
 filepath = os.path.join(csv_dir, file_name)
 
-date_str = file_name.split('_')[-1].replace('.csv', '')
 parts = file_name.split('_')
 freq = [p for p in parts if 'MHz' in p][0]
+date_str = [p for p in parts if p.count('-') == 2 and p[:2] == '20'][0]   # YYYY-MM-DD token
 
 data = np.genfromtxt(filepath, delimiter=',', skip_header=3)
 
