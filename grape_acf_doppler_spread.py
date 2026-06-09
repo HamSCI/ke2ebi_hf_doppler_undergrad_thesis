@@ -179,7 +179,8 @@ def utc_to_decimal_hours(t):
 SSC_decimal = utc_to_decimal_hours(SSC)
 
 plt.plot(time[0:length],freq[0:length],'.',color="black", label='Doppler frequency (Hz)')  
-plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='My line')
+if date == "2024-05-10":
+    plt.axvline(x=SSC_decimal, color='red', linestyle='--', linewidth=1, label='SSC')
 plt.suptitle("ACF Doppler " + theCallsign + " at " + str(frequency) + " MHz", fontsize=12)
 plt.xlabel(xaxis_title)
 #plt.xlim(hours_offset,end_hours)
